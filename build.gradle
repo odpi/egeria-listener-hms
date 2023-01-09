@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'org.apache.hive:hive-metastore:3.1.2'
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.7'
+    implementation 'org.apache.logging.log4j:log4j-core:2.7'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.7'
+}
+
+test {
+    useJUnitPlatform()
+}
