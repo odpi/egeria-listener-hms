@@ -28,6 +28,7 @@ public class Hive2EgeriaListener extends MetaStoreEventListener {
     private static final String HOT_SWAP = "org.apache.hive.metastore.listener.EgeriaListener.events.active.hotswap";
     private static final String ACTIVE = "org.apache.hive.metastore.listener.EgeriaListener.events.active";
     private static final String MAPPER = "org.apache.hive.metastore.listener.EgeriaListener.events.mapper";
+    private static final String NATIVE = "NATIVE";
 
     public Hive2EgeriaListener(Configuration config) {
         super(config);
@@ -52,8 +53,14 @@ public class Hive2EgeriaListener extends MetaStoreEventListener {
         }
 
         if( getConf().get(ACTIVE,OFF).equalsIgnoreCase(ON)) {
-            postEvent( dbEvent.getDatabase());
+
+            if(getConf().get(MAPPER, NATIVE).equalsIgnoreCase(NATIVE)) {
+
+
+                postEvent(dbEvent.getDatabase());
+            }
         }
+
 
     }
 

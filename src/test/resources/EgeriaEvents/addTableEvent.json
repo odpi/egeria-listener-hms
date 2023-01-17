@@ -1,0 +1,467 @@
+{
+    "eventTimestamp": 1666867853812,
+    "eventDirection": "OUTBOUND",
+    "eventCategory": "INSTANCE",
+    "eventOriginator": {
+        "metadataCollectionId": "d81b0efd-b2b9-45de-a755-cfd9ce482c65",
+        "serverName": "danielIBM",
+        "serverType": "Repository Proxy"
+    },
+    "errorMessage": null,
+    "targetMetadataCollectionId": null,
+    "targetRemoteConnection": null,
+    "targetTypeDefSummary": null,
+    "targetAttributeTypeDef": null,
+    "targetInstanceGUID": null,
+    "otherOrigin": null,
+    "otherMetadataCollectionId": null,
+    "otherTypeDefSummary": null,
+    "otherTypeDef": null,
+    "otherAttributeTypeDef": null,
+    "otherInstanceGUID": null,
+    "instanceEventType": "NEW_ENTITY_EVENT",
+    "typeDefGUID": "ce7e72b8-396a-4013-8688-f9d973067425",
+    "typeDefName": "RelationalTable",
+    "instanceGUID": "c3Bhcms6OmRlZmF1bHRfc2NoZW1hX2dob3N0X2ludmVudG9yeV9hZ2c=",
+    "originalEntity": null,
+    "entity": {
+        "class": "EntityDetail",
+        "headerVersion": 0,
+        "type": {
+            "class": "InstanceType",
+            "headerVersion": 0,
+            "typeDefCategory": "ENTITY_DEF",
+            "typeDefGUID": "ce7e72b8-396a-4013-8688-f9d973067425",
+            "typeDefName": "RelationalTable",
+            "typeDefVersion": 1,
+            "typeDefDescription": "A table within a relational database schema type.",
+            "typeDefSuperTypes": [
+                {
+                    "headerVersion": 1,
+                    "guid": "1a5e159b-913a-43b1-95fe-04433b25fca9",
+                    "name": "SchemaAttribute",
+                    "status": "ACTIVE_TYPEDEF"
+                },
+                {
+                    "headerVersion": 1,
+                    "guid": "718d4244-8559-49ed-ad5a-10e5c305a656",
+                    "name": "SchemaElement",
+                    "status": "ACTIVE_TYPEDEF"
+                },
+                {
+                    "headerVersion": 1,
+                    "guid": "a32316b8-dc8c-48c5-b12b-71c1b2a080bf",
+                    "name": "Referenceable",
+                    "status": "ACTIVE_TYPEDEF"
+                },
+                {
+                    "headerVersion": 1,
+                    "guid": "4e7761e8-3969-4627-8f40-bfe3cde85a1d",
+                    "name": "OpenMetadataRoot",
+                    "status": "ACTIVE_TYPEDEF"
+                }
+            ],
+            "validStatusList": [
+                "ACTIVE",
+                "DELETED"
+            ],
+            "validInstanceProperties": [
+                "qualifiedName",
+                "additionalProperties",
+                "isDeprecated",
+                "displayName",
+                "anchorGUID",
+                "description",
+                "aliases",
+                "defaultValueOverride",
+                "minimumLength",
+                "precision",
+                "length",
+                "orderedValues",
+                "allowsDuplicateValues",
+                "significantDigits",
+                "maxCardinality",
+                "cardinality",
+                "minCardinality",
+                "nativeClass",
+                "sortOrder",
+                "isNullable",
+                "name",
+                "position"
+            ]
+        },
+        "instanceProvenanceType": "LOCAL_COHORT",
+        "metadataCollectionId": "d81b0efd-b2b9-45de-a755-cfd9ce482c65",
+        "createTime": 1619791466,
+        "version": 1666867851243,
+        "guid": "c3Bhcms6OmRlZmF1bHRfc2NoZW1hX2dob3N0X2ludmVudG9yeV9hZ2c=",
+        "classifications": [
+            {
+                "class": "Classification",
+                "headerVersion": 1,
+                "type": {
+                    "class": "InstanceType",
+                    "headerVersion": 0,
+                    "typeDefCategory": "CLASSIFICATION_DEF",
+                    "typeDefGUID": "e2bb76bb-774a-43ff-9045-3a05f663d5d9",
+                    "typeDefName": "TypeEmbeddedAttribute",
+                    "typeDefVersion": 2,
+                    "typeDefDescription": "Type information embedded within an attribute.",
+                    "validStatusList": [
+                        "ACTIVE",
+                        "DELETED"
+                    ],
+                    "validInstanceProperties": [
+                        "isDeprecated",
+                        "qualifiedName",
+                        "displayName",
+                        "author",
+                        "defaultValue",
+                        "dataType",
+                        "usage",
+                        "description",
+                        "schemaTypeName",
+                        "versionNumber",
+                        "fixedValue",
+                        "encodingStandard",
+                        "additionalProperties"
+                    ]
+                },
+                "instanceProvenanceType": "LOCAL_COHORT",
+                "createdBy": "OMAGServer",
+                "createTime": 1666867851243,
+                "version": 1,
+                "name": "TypeEmbeddedAttribute",
+                "properties": {
+                    "class": "InstanceProperties",
+                    "headerVersion": 0,
+                    "instanceProperties": {
+                        "schemaTypeName": {
+                            "class": "PrimitivePropertyValue",
+                            "headerVersion": 0,
+                            "instancePropertyCategory": "PRIMITIVE",
+                            "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                            "typeName": "string",
+                            "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                            "primitiveValue": "RelationalTableType"
+                        }
+                    },
+                    "propertyNames": [
+                        "schemaTypeName"
+                    ],
+                    "propertyCount": 1
+                },
+                "status": "ACTIVE"
+            },
+            {
+                "class": "Classification",
+                "headerVersion": 1,
+                "type": {
+                    "class": "InstanceType",
+                    "headerVersion": 0,
+                    "typeDefCategory": "CLASSIFICATION_DEF",
+                    "typeDefGUID": "4814bec8-482d-463d-8376-160b0358e139",
+                    "typeDefName": "CalculatedValue",
+                    "typeDefVersion": 2,
+                    "typeDefDescription": "A field within a schema that is calculated via the formula and query targets rather than stored.",
+                    "validStatusList": [
+                        "ACTIVE",
+                        "DELETED"
+                    ],
+                    "validInstanceProperties": [
+                        "formula"
+                    ]
+                },
+                "instanceProvenanceType": "LOCAL_COHORT",
+                "createdBy": "OMAGServer",
+                "createTime": 1666867851243,
+                "version": 1,
+                "name": "CalculatedValue",
+                "properties": {
+                    "class": "InstanceProperties",
+                    "headerVersion": 0,
+                    "instanceProperties": {
+                        "formula": {
+                            "class": "PrimitivePropertyValue",
+                            "headerVersion": 0,
+                            "instancePropertyCategory": "PRIMITIVE",
+                            "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                            "typeName": "string",
+                            "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                            "primitiveValue": "SELECT item.doc.crn as CRN, item.doc.region_id as LOCATION, concat(item.family, \":\" , item.type) as ASSET_TYPE FROM (\nSELECT explode(items) as item\nFROM ghost_inventory_bazil\n) WHERE item.doc.state = \"active\""
+                        }
+                    },
+                    "propertyNames": [
+                        "formula"
+                    ],
+                    "propertyCount": 1
+                },
+                "status": "ACTIVE"
+            }
+        ],
+        "properties": {
+            "class": "InstanceProperties",
+            "headerVersion": 0,
+            "instanceProperties": {
+                "name": {
+                    "class": "PrimitivePropertyValue",
+                    "headerVersion": 0,
+                    "instancePropertyCategory": "PRIMITIVE",
+                    "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                    "typeName": "string",
+                    "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                    "primitiveValue": "ghost_inventory_agg"
+                },
+                "qualifiedName": {
+                    "class": "PrimitivePropertyValue",
+                    "headerVersion": 0,
+                    "instancePropertyCategory": "PRIMITIVE",
+                    "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                    "typeName": "string",
+                    "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                    "primitiveValue": "testprefix1spark::default_schema_ghost_inventory_agg"
+                }
+            },
+            "propertyNames": [
+                "qualifiedName",
+                "name"
+            ],
+            "propertyCount": 2
+        },
+        "status": "ACTIVE"
+    },
+    "entityProxy": null,
+    "originalRelationship": null,
+    "relationship": null,
+    "originalClassification": null,
+    "classification": null,
+    "instanceBatch": null,
+    "homeMetadataCollectionId": null,
+    "originalHomeMetadataCollectionId": null,
+    "originalTypeDefSummary": null,
+    "originalInstanceGUID": null,
+    "errorCode": "NOT_IN_USE",
+    "omrseventV1": {
+        "class": "OMRSEventV1",
+        "protocolVersionId": "OMRS V1.0",
+        "timestamp": 1666867853812,
+        "originator": {
+            "metadataCollectionId": "d81b0efd-b2b9-45de-a755-cfd9ce482c65",
+            "serverName": "danielIBM",
+            "serverType": "Repository Proxy"
+        },
+        "eventCategory": "INSTANCE",
+        "instanceEventSection": {
+            "eventType": "NEW_ENTITY_EVENT",
+            "typeDefGUID": "ce7e72b8-396a-4013-8688-f9d973067425",
+            "typeDefName": "RelationalTable",
+            "instanceGUID": "c3Bhcms6OmRlZmF1bHRfc2NoZW1hX2dob3N0X2ludmVudG9yeV9hZ2c=",
+            "entity": {
+                "class": "EntityDetail",
+                "headerVersion": 0,
+                "type": {
+                    "class": "InstanceType",
+                    "headerVersion": 0,
+                    "typeDefCategory": "ENTITY_DEF",
+                    "typeDefGUID": "ce7e72b8-396a-4013-8688-f9d973067425",
+                    "typeDefName": "RelationalTable",
+                    "typeDefVersion": 1,
+                    "typeDefDescription": "A table within a relational database schema type.",
+                    "typeDefSuperTypes": [
+                        {
+                            "headerVersion": 1,
+                            "guid": "1a5e159b-913a-43b1-95fe-04433b25fca9",
+                            "name": "SchemaAttribute",
+                            "status": "ACTIVE_TYPEDEF"
+                        },
+                        {
+                            "headerVersion": 1,
+                            "guid": "718d4244-8559-49ed-ad5a-10e5c305a656",
+                            "name": "SchemaElement",
+                            "status": "ACTIVE_TYPEDEF"
+                        },
+                        {
+                            "headerVersion": 1,
+                            "guid": "a32316b8-dc8c-48c5-b12b-71c1b2a080bf",
+                            "name": "Referenceable",
+                            "status": "ACTIVE_TYPEDEF"
+                        },
+                        {
+                            "headerVersion": 1,
+                            "guid": "4e7761e8-3969-4627-8f40-bfe3cde85a1d",
+                            "name": "OpenMetadataRoot",
+                            "status": "ACTIVE_TYPEDEF"
+                        }
+                    ],
+                    "validStatusList": [
+                        "ACTIVE",
+                        "DELETED"
+                    ],
+                    "validInstanceProperties": [
+                        "qualifiedName",
+                        "additionalProperties",
+                        "isDeprecated",
+                        "displayName",
+                        "anchorGUID",
+                        "description",
+                        "aliases",
+                        "defaultValueOverride",
+                        "minimumLength",
+                        "precision",
+                        "length",
+                        "orderedValues",
+                        "allowsDuplicateValues",
+                        "significantDigits",
+                        "maxCardinality",
+                        "cardinality",
+                        "minCardinality",
+                        "nativeClass",
+                        "sortOrder",
+                        "isNullable",
+                        "name",
+                        "position"
+                    ]
+                },
+                "instanceProvenanceType": "LOCAL_COHORT",
+                "metadataCollectionId": "d81b0efd-b2b9-45de-a755-cfd9ce482c65",
+                "createTime": 1619791466,
+                "version": 1666867851243,
+                "guid": "c3Bhcms6OmRlZmF1bHRfc2NoZW1hX2dob3N0X2ludmVudG9yeV9hZ2c=",
+                "classifications": [
+                    {
+                        "class": "Classification",
+                        "headerVersion": 1,
+                        "type": {
+                            "class": "InstanceType",
+                            "headerVersion": 0,
+                            "typeDefCategory": "CLASSIFICATION_DEF",
+                            "typeDefGUID": "e2bb76bb-774a-43ff-9045-3a05f663d5d9",
+                            "typeDefName": "TypeEmbeddedAttribute",
+                            "typeDefVersion": 2,
+                            "typeDefDescription": "Type information embedded within an attribute.",
+                            "validStatusList": [
+                                "ACTIVE",
+                                "DELETED"
+                            ],
+                            "validInstanceProperties": [
+                                "isDeprecated",
+                                "qualifiedName",
+                                "displayName",
+                                "author",
+                                "defaultValue",
+                                "dataType",
+                                "usage",
+                                "description",
+                                "schemaTypeName",
+                                "versionNumber",
+                                "fixedValue",
+                                "encodingStandard",
+                                "additionalProperties"
+                            ]
+                        },
+                        "instanceProvenanceType": "LOCAL_COHORT",
+                        "createdBy": "OMAGServer",
+                        "createTime": 1666867851243,
+                        "version": 1,
+                        "name": "TypeEmbeddedAttribute",
+                        "properties": {
+                            "class": "InstanceProperties",
+                            "headerVersion": 0,
+                            "instanceProperties": {
+                                "schemaTypeName": {
+                                    "class": "PrimitivePropertyValue",
+                                    "headerVersion": 0,
+                                    "instancePropertyCategory": "PRIMITIVE",
+                                    "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                                    "typeName": "string",
+                                    "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                                    "primitiveValue": "RelationalTableType"
+                                }
+                            },
+                            "propertyNames": [
+                                "schemaTypeName"
+                            ],
+                            "propertyCount": 1
+                        },
+                        "status": "ACTIVE"
+                    },
+                    {
+                        "class": "Classification",
+                        "headerVersion": 1,
+                        "type": {
+                            "class": "InstanceType",
+                            "headerVersion": 0,
+                            "typeDefCategory": "CLASSIFICATION_DEF",
+                            "typeDefGUID": "4814bec8-482d-463d-8376-160b0358e139",
+                            "typeDefName": "CalculatedValue",
+                            "typeDefVersion": 2,
+                            "typeDefDescription": "A field within a schema that is calculated via the formula and query targets rather than stored.",
+                            "validStatusList": [
+                                "ACTIVE",
+                                "DELETED"
+                            ],
+                            "validInstanceProperties": [
+                                "formula"
+                            ]
+                        },
+                        "instanceProvenanceType": "LOCAL_COHORT",
+                        "createdBy": "OMAGServer",
+                        "createTime": 1666867851243,
+                        "version": 1,
+                        "name": "CalculatedValue",
+                        "properties": {
+                            "class": "InstanceProperties",
+                            "headerVersion": 0,
+                            "instanceProperties": {
+                                "formula": {
+                                    "class": "PrimitivePropertyValue",
+                                    "headerVersion": 0,
+                                    "instancePropertyCategory": "PRIMITIVE",
+                                    "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                                    "typeName": "string",
+                                    "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                                    "primitiveValue": "SELECT item.doc.crn as CRN, item.doc.region_id as LOCATION, concat(item.family, \":\" , item.type) as ASSET_TYPE FROM (\nSELECT explode(items) as item\nFROM ghost_inventory_bazil\n) WHERE item.doc.state = \"active\""
+                                }
+                            },
+                            "propertyNames": [
+                                "formula"
+                            ],
+                            "propertyCount": 1
+                        },
+                        "status": "ACTIVE"
+                    }
+                ],
+                "properties": {
+                    "class": "InstanceProperties",
+                    "headerVersion": 0,
+                    "instanceProperties": {
+                        "name": {
+                            "class": "PrimitivePropertyValue",
+                            "headerVersion": 0,
+                            "instancePropertyCategory": "PRIMITIVE",
+                            "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                            "typeName": "string",
+                            "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                            "primitiveValue": "ghost_inventory_agg"
+                        },
+                        "qualifiedName": {
+                            "class": "PrimitivePropertyValue",
+                            "headerVersion": 0,
+                            "instancePropertyCategory": "PRIMITIVE",
+                            "typeGUID": "b34a64b9-554a-42b1-8f8a-7d5c2339f9c4",
+                            "typeName": "string",
+                            "primitiveDefCategory": "OM_PRIMITIVE_TYPE_STRING",
+                            "primitiveValue": "testprefix1spark::default_schema_ghost_inventory_agg"
+                        }
+                    },
+                    "propertyNames": [
+                        "qualifiedName",
+                        "name"
+                    ],
+                    "propertyCount": 2
+                },
+                "status": "ACTIVE"
+            }
+        }
+    }
+}
