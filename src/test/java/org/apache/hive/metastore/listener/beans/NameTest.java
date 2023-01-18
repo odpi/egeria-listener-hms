@@ -45,7 +45,7 @@ class NameTest extends BaseEgeriaType {
     void getTypeName() {
 
         Name name = NameHelper.getName();
-        assertEquals("string", name.getTypeGUID());
+        assertEquals("string", name.getTypeName());
     }
     @Nested
     public class BuilderTest {
@@ -86,7 +86,7 @@ class NameTest extends BaseEgeriaType {
         void setTypeName() {
 
             Name name = NameHelper.getName();
-            assertEquals("string", name.getTypeGUID());
+            assertEquals("string", name.getTypeName());
         }
 
         @Test
