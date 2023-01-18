@@ -9,8 +9,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         property = "class")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Classification.class, name = "Classification"),
-        @JsonSubTypes.Type(value = Type.class, name = "type"),
-        @JsonSubTypes.Type(value = Entity.class, name = "Entity")
+        @JsonSubTypes.Type(value = Type.class, name = "InstanceType"),
+        @JsonSubTypes.Type(value = Entity.class, name = "Entity"),
+        @JsonSubTypes.Type(value = Name.class, name = "PrimitivePropertyValue")
 })
 
 public class BaseEgeriaType
