@@ -2,7 +2,7 @@
 package org.apache.hive.metastore.listener.beans;
 
 
-public class InstanceProperties {
+public class InstancePropertyValues {
 
     private Name name;
     private QualifiedName qualifiedName;

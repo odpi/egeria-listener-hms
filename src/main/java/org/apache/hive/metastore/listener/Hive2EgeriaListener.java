@@ -8,6 +8,9 @@ import org.apache.hadoop.hive.metastore.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 
@@ -29,12 +32,20 @@ public class Hive2EgeriaListener extends MetaStoreEventListener {
     private static final String ACTIVE = "org.apache.hive.metastore.listener.EgeriaListener.events.active";
     private static final String MAPPER = "org.apache.hive.metastore.listener.EgeriaListener.events.mapper";
     private static final String NATIVE = "NATIVE";
+    private static final String ENABLED_EVENTS = "org.apache.hive.metastore.listener.EgeriaListener.events.active-list";
+    private static final String CREATE_DATABASE = "onCreateDatabase";
 
     public Hive2EgeriaListener(Configuration config) {
         super(config);
 
-        if(logger.isDebugEnabled())
-            logger.debug("Hive2EgeriaListener");
+
+        if(logger.isDebugEnabled()) {
+            logger.debug("Hive2EgeriaListener with the following active events");
+            Collection<String> list = getConf().getTrimmedStringCollection(ENABLED_EVENTS);
+            StringBuilder events = new StringBuilder();
+            list.stream().map(s -> s + "\n").forEach(events::append);
+            logger.debug(events.toString());
+        }
     }
 
     /**
@@ -48,21 +59,56 @@ public class Hive2EgeriaListener extends MetaStoreEventListener {
         if(logger.isDebugEnabled())
             logger.debug(String.format("onCreateDatabase %n%s", dbEvent.toString()));
 
+        /*
+        check if we are hot swapping config
+         */
         if( getConf().get(HOT_SWAP, OFF).equalsIgnoreCase(ON) ) {
             getConf().reloadConfiguration();
         }
 
-        if( getConf().get(ACTIVE,OFF).equalsIgnoreCase(ON)) {
+        /*
+        check that the list of active events contains "onCreateDatabase"
+         */
+        if( Arrays.stream(getConf().getTrimmedStrings(ENABLED_EVENTS)).anyMatch(s -> s.equalsIgnoreCase(CREATE_DATABASE))) {
 
+            /*
+            the below MAPPER check will eventually allow plug in event formatters
+             */
             if(getConf().get(MAPPER, NATIVE).equalsIgnoreCase(NATIVE)) {
-
-
                 postEvent(dbEvent.getDatabase());
             }
         }
 
 
     }
+
+
+    /**
+     * @param dbEvent database event
+     * @throws MetaException
+     */
+    @Override
+    public void onDropDatabase(DropDatabaseEvent dbEvent) throws MetaException {
+        super.onDropDatabase(dbEvent);
+
+        if(logger.isDebugEnabled())
+            logger.debug(String.format("onDropDatabase %n%s", dbEvent.toString()));
+
+        if( getConf().get(HOT_SWAP, OFF).equalsIgnoreCase(ON) ) {
+            getConf().reloadConfiguration();
+        }
+
+        if( getConf().get(ACTIVE,OFF).equalsIgnoreCase(ON)) {
+            if(getConf().get(MAPPER, NATIVE).equalsIgnoreCase(NATIVE)) {
+                postEvent(dbEvent.getDatabase());
+            }
+        }
+
+
+
+    }
+
+
 
 
     /**
@@ -126,7 +172,7 @@ public class Hive2EgeriaListener extends MetaStoreEventListener {
             posting to kafka to be added later
              */
 
-            System.out.println( String.format("Event %n%s",json) );
+            System.out.printf("Event %n%s%n",json);
 
         } catch (Exception ex) {
             handleException("An Exception was thrown mapping an event to json", ex);
