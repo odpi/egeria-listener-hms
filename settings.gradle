@@ -8,8 +8,8 @@ pluginManagement {
     plugins {
     }
 }
-// TODO: Specify the name of the artifact (project name) here
-rootProject.name = 'egeria-template-sample'
+
+rootProject.name = 'egeria-listener=hms'
 
 // For multi modules, list each *project name* here
 // include(':egeria-connector-postgres')
