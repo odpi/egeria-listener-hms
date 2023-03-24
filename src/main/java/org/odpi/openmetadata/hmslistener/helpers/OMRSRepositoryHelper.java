@@ -65,7 +65,7 @@ public class OMRSRepositoryHelper {
         }
     }
     /**
-     *
+     * create embedded classification
      * @param apiName API name for diagnostics
      * @param type the schema type name.
      * @param entity entity to apply the classification to
