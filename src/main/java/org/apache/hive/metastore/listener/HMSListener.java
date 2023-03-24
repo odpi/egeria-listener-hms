@@ -202,31 +202,31 @@ public class HMSListener extends MetaStoreEventListener {
         }
     }
 
-    /**
-     *
-     * @param msg       the text to be displayed in the error log
-     * @param ex        the original exception
-     * @throws MetaException
-     */
-    private void handleException( String msg, Exception ex) throws MetaException {
-
-        if( logger.isDebugEnabled()) {
-            logger.debug( String.format("handleException %n%s%n%s",msg,ex.getMessage()));
-        }
-        /*
-        never hide the fact that exceptions are being thrown .
-        just decide if we let HMS know
-         */
-        logger.error(msg, ex);
-        if( getConf().get(HOT_SWAP, OFF).equalsIgnoreCase(ON)) {
-            getConf().reloadConfiguration();
-        }
-        if( getConf().get(CONFIG_PROPOGATE_EXCEPTIONS,OFF).equalsIgnoreCase(ON)) {
-            throw new MetaException( ex.getMessage() );
-        }
-
-
-    }
+//    /**
+//     *
+//     * @param msg       the text to be displayed in the error log
+//     * @param ex        the original exception
+//     * @throws MetaException
+//     */
+//    private void handleException( String msg, Exception ex) throws MetaException {
+//
+//        if( logger.isDebugEnabled()) {
+//            logger.debug( String.format("handleException %n%s%n%s",msg,ex.getMessage()));
+//        }
+//        /*
+//        never hide the fact that exceptions are being thrown .
+//        just decide if we let HMS know
+//         */
+//        logger.error(msg, ex);
+//        if( getConf().get(HOT_SWAP, OFF).equalsIgnoreCase(ON)) {
+//            getConf().reloadConfiguration();
+//        }
+//        if( getConf().get(CONFIG_PROPOGATE_EXCEPTIONS,OFF).equalsIgnoreCase(ON)) {
+//            throw new MetaException( ex.getMessage() );
+//        }
+//
+//
+//    }
 
 
 //    /**
