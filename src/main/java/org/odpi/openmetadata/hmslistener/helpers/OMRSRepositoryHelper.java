@@ -71,7 +71,6 @@ public class OMRSRepositoryHelper {
      * @param entity entity to apply the classification to
      * @param dataType column type if a column
      * @return the embedded type classification
-
      */
     public Classification createTypeEmbeddedClassification(String apiName, String type, EntityDetail entity, String dataType)  {
         String methodName = "createTypeEmbeddedClassification";
@@ -183,7 +182,7 @@ public class OMRSRepositoryHelper {
         try {
             relationshipGUID = Base64.getUrlEncoder().encodeToString(connectionToAssetCanonicalName.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
-           new RuntimeException(e);
+           throw new RuntimeException(e);
         }
 
         relationship.setGUID(relationshipGUID);

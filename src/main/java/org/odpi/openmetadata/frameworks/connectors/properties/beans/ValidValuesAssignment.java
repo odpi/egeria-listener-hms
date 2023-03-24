@@ -115,7 +115,7 @@ public class ValidValuesAssignment extends PropertyBase
             return false;
         }
         ValidValuesAssignment that = (ValidValuesAssignment) objectToCompare;
-        return Objects.equals(strictRequirement, that.strictRequirement);
+        return strictRequirement == that.strictRequirement;
     }
 
 

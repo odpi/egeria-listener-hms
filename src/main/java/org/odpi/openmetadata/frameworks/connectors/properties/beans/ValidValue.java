@@ -252,7 +252,7 @@ public class ValidValue extends Referenceable
                 Objects.equals(description, that.description) &&
                 Objects.equals(usage, that.usage) &&
                 Objects.equals(scope, that.scope) &&
-                Objects.equals(isDeprecated, that.isDeprecated) &&
+                (isDeprecated == that.isDeprecated) &&
                 Objects.equals(preferredValue, that.preferredValue);
     }
 
