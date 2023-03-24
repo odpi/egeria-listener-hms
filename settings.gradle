@@ -9,7 +9,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'egeria-listener=hms'
+rootProject.name = 'egeria-listener-hms'
 
 // For multi modules, list each *project name* here
 // include(':egeria-connector-postgres')
