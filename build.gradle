@@ -51,24 +51,29 @@ ext {
     hmsVersion4 = '4.0.0-alpha-2'
     hadoopVersion = '3.3.4'
     hiveStorageVersion = '2.8.1'
-    thriftVersion = '0.18.0'
     kafkaVersion = '3.4.0'
     collectionsVersion = '4.4'
     jupiterVersion = '5.8.1'
+    jacksonVersion = '2.14.2'
+    slf4JVersion = '1.7.36'
 }
 
 // Dependencies
 dependencies {
     // Include at compile & runtime - to support use of connector
-    implementation "org.apache.hadoop:hadoop-common:${hadoopVersion}"
-    implementation "org.apache.thrift:libthrift:${thriftVersion}"
+    api "org.apache.hadoop:hadoop-common:${hadoopVersion}"
     implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
     implementation "org.apache.commons:commons-collections4:${collectionsVersion}"
+    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "org.slf4j:slf4j-api:${slf4JVersion}"
+
 
     if (project.hasProperty("hmsv4")) {
         // this is implementation not API, so that it brings in GetTableRequest, which is required at runtime by the hms client
-        implementation "org.apache.hive:hive-standalone-metastore-server:${hmsVersion4}"
-
+        api "org.apache.hive:hive-standalone-metastore-server:${hmsVersion4}"
+        api "org.apache.hive:hive-standalone-metastore-common:${hmsVersion4}"
     } else {
         api("org.apache.hive:hive-standalone-metastore:${hmsVersion3}")
         testImplementation "org.apache.hive:hive-storage-api:${hiveStorageVersion}"
@@ -139,6 +144,17 @@ shadowJar {
 loggingCapabilities {
     // Ensure we use slf4j
     enforceLog4J2()
+}
+
+// Dependency checking - see https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin
+dependencyAnalysis {
+    issues {
+        all {
+            onAny {
+                severity('fail')
+            }
+        }
+    }
 }
 
 // TODO Ensure we run checks (health) on final Jar, not initial
