@@ -49,7 +49,7 @@ jobs:
           # codeQL requires a full before/after build to compare results. Caching can result in action failing
           #cache-read-only: true
           cache-disabled: true
-          arguments: -x javadoc -x test build
+          arguments: -x javadoc -x test build -Phmsv4
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
