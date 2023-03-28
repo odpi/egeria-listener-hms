@@ -1,12 +1,15 @@
 package org.apache.hive.metastore.listener;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hive.metastore.IHMSHandler;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,15 +42,42 @@ public class ListenerTesterApp {
         }
         sd.setCols(cols);
         table.setSd(sd);
-
-        //TODO: Signature changed v3 -> v4
-        CreateTableEvent tableEvent = new CreateTableEvent(table, true, null, false);
+        CreateTableEvent tableEvent = getCreateTableEvent(table);
         hmsListener.onCreateTable(tableEvent);
 
+    }
 
+    private static CreateTableEvent getCreateTableEvent(Table table) {
+        CreateTableEvent tableEvent;
+        try {
+            Class<?> createTableEventclass = Class.forName("CreateTableEvent");
+            Constructor constructor = null;
+            boolean isV4 = false;
+            try {
+             constructor = createTableEventclass.getDeclaredConstructor(Table.class, boolean.class, IHMSHandler.class, boolean.class);
 
+            } catch (NoSuchMethodException e) {
+                    // we expect this if running against hms v3.1.3
+            }
 
-
+            if (isV4) {
+                tableEvent = (CreateTableEvent) constructor.newInstance(table, true, null, false);
+            } else {
+                constructor = createTableEventclass.getDeclaredConstructor(Table.class, boolean.class, IHMSHandler.class);
+                tableEvent = (CreateTableEvent) constructor.newInstance(table, true, null);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return tableEvent;
     }
 
 }

@@ -76,7 +76,7 @@ dependencies {
         api "org.apache.hive:hive-standalone-metastore-common:${hmsVersion4}"
     } else {
         api("org.apache.hive:hive-standalone-metastore:${hmsVersion3}")
-        testImplementation "org.apache.hive:hive-storage-api:${hiveStorageVersion}"
+       // testImplementation "org.apache.hive:hive-storage-api:${hiveStorageVersion}"
     }
 
     // Only needed to compile test code
