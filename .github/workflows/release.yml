@@ -27,7 +27,7 @@ jobs:
           java-version: '17'
       - uses: gradle/wrapper-validation-action@v1
       - name: Build with Gradle & Release artifacts
-        run: ./gradlew publish
+        run: ./gradlew publish -Phmsv4
         # Import secrets needed for code signing and distribution
         env:
           OSSRH_GPG_KEYID: ${{ secrets.OSSRH_GPG_KEYID }}

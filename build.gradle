@@ -15,7 +15,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     // Checks for unnecessary & problematic dependencies
-    // id 'com.autonomousapps.dependency-analysis' version "1.19.0"
+    id 'com.autonomousapps.dependency-analysis' version "1.19.0"
     // helps resolve log implementation clashes
     id 'dev.jacomet.logging-capabilities' version "0.11.0"
     // This plugin helps resolve jakarta/javax clashes
@@ -35,8 +35,7 @@ repositories {
         url "https://maven.atlassian.com/3rdparty"
     }
     // uncomment to pick up from local ~/.m2 - but can be unpredictable. recommend to use maven central and snapshots
-    mavenLocal()
-
+    //mavenLocal()
 }
 
 
@@ -48,44 +47,41 @@ description = 'Egeria Connector for Hive Metastore'
 
 // Versions - most should be picked up from the import of the Egeria base POM
 ext {
-    egeriaversion = '4.0-SNAPSHOT'
-    cachingconnectorversion = '1.1-SNAPSHOT'
     hmsVersion3 = '3.1.3'
     hmsVersion4 = '4.0.0-alpha-2'
-    ibmhmsVersion = '3.1.2'
     hadoopVersion = '3.3.4'
     hiveStorageVersion = '2.8.1'
-    thriftVersion = '0.18.0'
+    kafkaVersion = '3.4.0'
+    collectionsVersion = '4.4'
+    jupiterVersion = '5.8.1'
+    jacksonVersion = '2.14.2'
+    slf4JVersion = '1.7.36'
 }
 
 // Dependencies
 dependencies {
-    // authoritative versions for dependencyManagement provided by Egeria core - this uses the dependencyManagement
-    // in the main Egeria pom to define the versions of the dependencies.
-    implementation platform("org.odpi.egeria:egeria:${egeriaversion}")
-
     // Include at compile & runtime - to support use of connector
-    implementation "org.apache.hadoop:hadoop-common:${hadoopVersion}"
-    runtimeOnly 'org.apache.hadoop.thirdparty:hadoop-shaded-guava'
-    implementation 'org.apache.thrift:libthrift:${thriftVersion}'
-    implementation 'org.apache.kafka:kafka-clients'
-    implementation 'org.apache.commons:commons-collections4'
+    api "org.apache.hadoop:hadoop-common:${hadoopVersion}"
+    implementation "org.apache.kafka:kafka-clients:${kafkaVersion}"
+    implementation "org.apache.commons:commons-collections4:${collectionsVersion}"
+    api "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "org.slf4j:slf4j-api:${slf4JVersion}"
+
 
     if (project.hasProperty("hmsv4")) {
         // this is implementation not API, so that it brings in GetTableRequest, which is required at runtime by the hms client
-        // this is not using the variable for the version - I think something about the characters is not
-        // allowing me to - so I have hard coded for now.
-        implementation 'org.apache.hive:hive-standalone-metastore-common:4.0.0-alpha-2'
-
+        api "org.apache.hive:hive-standalone-metastore-server:${hmsVersion4}"
+        api "org.apache.hive:hive-standalone-metastore-common:${hmsVersion4}"
     } else {
         api("org.apache.hive:hive-standalone-metastore:${hmsVersion3}")
-        testImplementation 'org.apache.hive:hive-storage-api:${hiveStorageVersion}'
+        testImplementation "org.apache.hive:hive-storage-api:${hiveStorageVersion}"
     }
 
     // Only needed to compile test code
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-    testImplementation 'org.junit.jupiter:junit-jupiter-api'
-
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${jupiterVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${jupiterVersion}"
 }
 
 
@@ -94,12 +90,6 @@ configurations.all {
     // check for updates every build - critical when using Snapshots
     resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
     // Resolve logging clashes - consistent with Egeria
-    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
-    exclude group: 'org.slf4j', module: 'slf4j-reload4j'
-    exclude group: 'ch.qos.reload4j', module: 'reload4j'
-    exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
-    exclude group: 'log4j', module: 'log4j'
-    exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 // Testing
@@ -149,39 +139,27 @@ shadowJar {
     archiveClassifier = 'jar-with-dependencies'
     // required as this hits a jar limit otherwise
     zip64 true
-    // TODO: May not need to exclude, since we shade the dependencies
-    exclude("com/google/protobuf/**")
-    // strip what we don't need, but keep egeria classes (i.e. connector dependency - providers)
-    // If enabled will cause connector to fail when loading hadoop-commons. Disabling, as what else is dynamically loaded?
-    //minimize {
-    //    exclude(dependency('org.odpi.egeria:.*:.*'))
-    //}
-    // Hive libraries contain a large dependency chain. We want to shade most, but not all,
-    // no wildcards, so have to list each one (or recode as expression). Also much quicker explicitly declaring for
-    // hadoop, kerby, yetus, jute, zookeeper, commons, curator, avro, calcite, thrift
-    relocate("org.apache", "org.odpi.openmetadata.shaded.apache")
-    // guava, common, re2j, gson
-    relocate("com.google", "org.odpi.openmetadata.shaded.google")
-    relocate("org.codehaus.stax2", "org.odpi.openmetadata.shaded.stax2")
-    relocate("org.xbill", "org.odpi.openmetadata.shaded.xbill")
-    relocate("com.ctc.wstx", "org.odpi.openmetadata.shaded.wstx")
-    relocate("com.sun", "org.odpi.openmetadata.shaded.sun")
-    // servlet, jdo, realtime, annotation - need to be explicit, or Hadoop Configuration will fail to load from java.javax.xml
-    relocate("javax.servlet", "org.odpi.openmetadata.shaded.javax.servlet")
-    relocate("javax.jdo", "org.odpi.openmetadata.shaded.javax.jdo")
-    relocate("javax.realtime", "org.odpi.openmetadata.shaded.javax.realtime")
-    relocate("javax.annotation", "org.odpi.openmetadata.shaded.javax.annotation")
-    relocate("org.xerial.snappy", "org.odpi.openmetadata.shaded.snappy")
-    relocate("com.fasterxml", "org.odpi.openmetadata.shaded.fasterxml")
-    relocate("org.codehaus", "org.odpi.openmetadata.shaded.codehaus")
-    relocate("javolution", "org.odpi.openmetadata.shaded.javolution")
-    relocate("com.facebook", "org.odpi.openmetadata.shaded.facebook")
-    relocate("org.joda", "org.odpi.openmetadata.shaded.joda")
+}
+
+loggingCapabilities {
+    // Ensure we use slf4j
+    enforceLog4J2()
+}
+
+// Dependency checking - see https://github.com/autonomousapps/dependency-analysis-android-gradle-plugin
+dependencyAnalysis {
+    issues {
+        all {
+            onAny {
+                severity('fail')
+            }
+        }
+    }
 }
 
 // TODO Ensure we run checks (health) on final Jar, not initial
 build.dependsOn shadowJar
-// build.dependsOn("buildHealth")
+build.dependsOn("buildHealth")
 
 // We only have a single artifact for now - this additional metadata is
 // required for publishing to maven central. Only doing signing in 'CI'
