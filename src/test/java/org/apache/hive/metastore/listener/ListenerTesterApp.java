@@ -40,7 +40,8 @@ public class ListenerTesterApp {
         sd.setCols(cols);
         table.setSd(sd);
 
-        CreateTableEvent tableEvent = new CreateTableEvent(table, true, null);
+        //TODO: Signature changed v3 -> v4
+        CreateTableEvent tableEvent = new CreateTableEvent(table, true, null, false);
         hmsListener.onCreateTable(tableEvent);
 
 
