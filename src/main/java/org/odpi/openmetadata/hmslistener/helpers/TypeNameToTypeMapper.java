@@ -13,9 +13,9 @@ public class TypeNameToTypeMapper {
     public InstanceType getTypeFromName(String name){
         InstanceType type = null;
         if (name.equals(SupportedTypes.TABLE)) {
-            type = SupportedTypes.TABLE_TYPE;
+            type = SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE;
         } else  if (name.equals(SupportedTypes.COLUMN)) {
-            type = SupportedTypes.COLUMN_TYPE;
+            type = SupportedTypes.RELATIONAL_COLUMN_INSTANCETYPE;
         } else  if (name.equals(SupportedTypes.ATTRIBUTE_FOR_SCHEMA)) {
             type = SupportedTypes.ATTRIBUTE_FOR_SCHEMA_TYPE;
         } else  if (name.equals(SupportedTypes.NESTED_SCHEMA_ATTRIBUTE)) {

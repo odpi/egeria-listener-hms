@@ -57,16 +57,23 @@ public class SupportedTypes {
     public static final String RELATIONAL_COLUMN_TYPE = "RelationalColumnType";
 
     public static final String NESTED_SCHEMA_ATTRIBUTE = "NestedSchemaAttribute";
-    public static final InstanceType TABLE_TYPE = new InstanceType(
-            TypeDefCategory.ENTITY_DEF,
-            "1321bcc0-dc6a-48ed-9ca6-0c6f934b0b98",
-             TABLE,
-    1L
-    );
-    public static final InstanceType COLUMN_TYPE = new InstanceType(
+//    public static final InstanceType RELATIONAL_TABLE_TYPE_INSTANCETYPE = new InstanceType(
+//            TypeDefCategory.ENTITY_DEF,
+//            "1321bcc0-dc6a-48ed-9ca6-0c6f934b0b98",
+//             RELATIONAL_TABLE_TYPE,
+//    1L
+//    );
+
+    public static final InstanceType RELATIONAL_COLUMN_INSTANCETYPE = new InstanceType(
             TypeDefCategory.ENTITY_DEF,
             "aa8d5470-6dbc-4648-9e2f-045e5df9d2f9",
             COLUMN,
+            1L
+    );
+    public static final InstanceType RELATIONAL_TABLE_INSTANCETYPE = new InstanceType(
+            TypeDefCategory.ENTITY_DEF,
+            "ce7e72b8-396a-4013-8688-f9d973067425",
+            TABLE,
             1L
     );
     // relationships and types

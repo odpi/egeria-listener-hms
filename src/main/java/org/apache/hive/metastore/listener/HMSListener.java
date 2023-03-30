@@ -12,6 +12,7 @@ import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 import org.odpi.openmetadata.hmslistener.kafka.KafkaClient;
 import org.odpi.openmetadata.hmslistener.mapper.HMSToOMRSInstanceEventMapper;
 import org.odpi.openmetadata.repositoryservices.events.OMRSInstanceEvent;
+import org.odpi.openmetadata.repositoryservices.events.beans.v1.OMRSEventV1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,7 +121,9 @@ public class HMSListener extends MetaStoreEventListener {
             for ( OMRSInstanceEvent event:events) {
                 ObjectMapper om = new ObjectMapper();
                 try {
-                    String eventStr = om.writeValueAsString(event);
+                    String eventStr = om.writeValueAsString(event.getOMRSEventV1());
+                    OMRSEventV1 event2 = om.readValue(eventStr, OMRSEventV1.class);
+
                     kafkaClient.sendEvent(eventStr);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);

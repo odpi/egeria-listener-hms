@@ -1,12 +1,10 @@
-package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
+package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;
 
 import com.fasterxml.jackson.annotation.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -14,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_ONLY;
 
 /**
- * org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyValue provides a common class for holding an instance type and value.
+ * InstancePropertyValue provides a common class for holding an instance type and value.
  */
 @JsonAutoDetect(getterVisibility = PUBLIC_ONLY, setterVisibility = PUBLIC_ONLY, fieldVisibility = NONE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,10 +23,10 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
         property = "class")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ArrayPropertyValue.class, name = "ArrayPropertyValue"),
-        @JsonSubTypes.Type(value = EnumPropertyValue.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EnumPropertyValue"),
-        @JsonSubTypes.Type(value = MapPropertyValue.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.MapPropertyValue"),
-        @JsonSubTypes.Type(value = PrimitivePropertyValue.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.PrimitivePropertyValue"),
-        @JsonSubTypes.Type(value = StructPropertyValue.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.StructPropertyValue")
+        @JsonSubTypes.Type(value = EnumPropertyValue.class, name = "EnumPropertyValue"),
+        @JsonSubTypes.Type(value = MapPropertyValue.class, name = "MapPropertyValue"),
+        @JsonSubTypes.Type(value = PrimitivePropertyValue.class, name = "PrimitivePropertyValue"),
+        @JsonSubTypes.Type(value = StructPropertyValue.class, name = "StructPropertyValue")
 })
 public abstract class InstancePropertyValue extends InstanceElementHeader
 {
@@ -54,7 +52,7 @@ public abstract class InstancePropertyValue extends InstanceElementHeader
     /**
      * Typical constructor initializes the instance property value to nulls.
      *
-     * @param instancePropertyCategory org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyCategory Enum
+     * @param instancePropertyCategory InstancePropertyCategory Enum
      */
     protected InstancePropertyValue(InstancePropertyCategory instancePropertyCategory)
     {
@@ -66,7 +64,7 @@ public abstract class InstancePropertyValue extends InstanceElementHeader
     /**
      * Copy/clone constructor initializes the instance property value from the supplied template.
      *
-     * @param template org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyValue
+     * @param template InstancePropertyValue
      */
     protected InstancePropertyValue(InstancePropertyValue template)
     {
@@ -84,7 +82,7 @@ public abstract class InstancePropertyValue extends InstanceElementHeader
     /**
      * Delegate the process of cloning to the subclass.
      *
-     * @return subclass of org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyValue
+     * @return subclass of InstancePropertyValue
      */
     public abstract InstancePropertyValue cloneFromSubclass();
 
@@ -136,7 +134,7 @@ public abstract class InstancePropertyValue extends InstanceElementHeader
 
 
     /**
-     * Converts an org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyValue to the values we need.
+     * Converts an InstancePropertyValue to the values we need.
      * Object, String or whatever.
      *
      * @param valMap values
@@ -226,7 +224,7 @@ public abstract class InstancePropertyValue extends InstanceElementHeader
     @Override
     public String toString()
     {
-        return "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstancePropertyValue{" +
+        return "InstancePropertyValue{" +
                 "instancePropertyCategory=" + instancePropertyCategory +
                 ", typeGUID='" + typeGUID + '\'' +
                 ", typeName='" + typeName + '\'' +
