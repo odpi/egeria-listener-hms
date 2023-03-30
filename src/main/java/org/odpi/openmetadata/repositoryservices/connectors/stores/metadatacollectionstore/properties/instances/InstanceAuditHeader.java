@@ -1,5 +1,6 @@
-package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
+package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -10,7 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_ONLY;
 
 /**
- * org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceAuditHeader manages the attributes that are common to classifications,
+ * InstanceAuditHeader manages the attributes that are common to classifications,
  * entities and relationships.  We need to be able to audit when these fundamental elements change and
  * by whom.  Thus, they share this header.  The fields in this header are managed as follows:
  * <ul>
@@ -19,7 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
  *         controls the properties that can be stored in the instance.
  *     </li>
  *     <li>
- *         org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProvenanceType defines the type of metadata collection that this instance originated from.
+ *         InstanceProvenanceType defines the type of metadata collection that this instance originated from.
  *     </li>
  *     <li>
  *         MetadataCollectionId defines which metadata collection that this instance came from - that is its home.
@@ -82,8 +83,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
         include = JsonTypeInfo.As.PROPERTY,
         property = "class")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Classification.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Classification"),
-        @JsonSubTypes.Type(value = InstanceHeader.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceHeader")
+        @JsonSubTypes.Type(value = Classification.class, name = "Classification"),
+        @JsonSubTypes.Type(value = InstanceHeader.class, name = "InstanceHeader")
 })
 public abstract class InstanceAuditHeader extends InstanceElementHeader
 {
@@ -172,7 +173,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Return the type of this instance.  This identifies the type definition (TypeDef) that determines its properties.
      *
-     * @return org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceType object
+     * @return InstanceType object
      */
     public InstanceType getType()
     {
@@ -190,7 +191,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Set up the type of this instance.  This identifies the type definition (TypeDef) that determines its properties.
      *
-     * @param type org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceType object
+     * @param type InstanceType object
      */
     public void setType(InstanceType type)
     {
@@ -201,7 +202,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Return the type of the provenance for this instance.
      *
-     * @return org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProvenanceType enum
+     * @return InstanceProvenanceType enum
      */
     public InstanceProvenanceType getInstanceProvenanceType() { return instanceProvenanceType; }
 
@@ -209,7 +210,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Set up the type of the provenance for this instance.
      *
-     * @param instanceProvenanceType org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProvenanceType enum
+     * @param instanceProvenanceType InstanceProvenanceType enum
      */
     public void setInstanceProvenanceType(InstanceProvenanceType instanceProvenanceType)
     {
@@ -316,7 +317,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Return the status of this instance.
      *
-     * @return org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus
+     * @return InstanceStatus
      */
     public InstanceStatus getStatus() { return currentStatus; }
 
@@ -324,7 +325,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
     /**
      * Set up the status of this instance.
      *
-     * @param newStatus org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus
+     * @param newStatus InstanceStatus
      */
     public void setStatus(InstanceStatus newStatus) { this.currentStatus = newStatus; }
 
@@ -467,7 +468,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
      * Return the status to use when a deleted instance is restored.  UNKNOWN is used whenever the instance is
      * not in DELETED status.
      *
-     * @return org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus
+     * @return InstanceStatus
      */
     public InstanceStatus getStatusOnDelete() { return statusOnDelete; }
 
@@ -476,7 +477,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
      * Set up the status to use when a deleted instance is restored.  UNKNOWN is used whenever the instance is
      * not in DELETED status.
      *
-     * @param statusOnDelete org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus Enum
+     * @param statusOnDelete InstanceStatus Enum
      */
     public void setStatusOnDelete(InstanceStatus statusOnDelete) { this.statusOnDelete = statusOnDelete; }
 
@@ -521,7 +522,7 @@ public abstract class InstanceAuditHeader extends InstanceElementHeader
      */
     @Override
     public String toString() {
-        return "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceAuditHeader{" +
+        return "InstanceAuditHeader{" +
                 "headerVersion=" + getHeaderVersion() +
                 ", type=" + type +
                 ", instanceProvenanceType=" + instanceProvenanceType +

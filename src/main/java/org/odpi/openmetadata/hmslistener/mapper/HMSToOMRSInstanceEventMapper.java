@@ -13,6 +13,7 @@ import org.odpi.openmetadata.hmslistener.SupportedTypes;
 import org.odpi.openmetadata.hmslistener.helpers.OMRSRepositoryHelper;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProperties;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus;
 import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Relationship;
 import org.odpi.openmetadata.repositoryservices.events.OMRSEventOriginator;
 import org.odpi.openmetadata.repositoryservices.events.OMRSInstanceEvent;
@@ -34,6 +35,8 @@ public class HMSToOMRSInstanceEventMapper {
     private String        qualifiedNameAboveTable =null;
 
     private OMRSRepositoryHelper repositoryHelper = null;
+
+
     public HMSToOMRSInstanceEventMapper(String       originatorMetadataCollectionId,
                                         String       originatorServerName,
                                         String       originatorServerType,
@@ -57,7 +60,7 @@ public class HMSToOMRSInstanceEventMapper {
         }
         List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
         EntityDetail newTableEntity = new EntityDetail();
-        newTableEntity.setType(SupportedTypes.TABLE_TYPE);
+        newTableEntity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
         Table hmsTable = createTableEvent.getTable();
         String tableName = hmsTable.getTableName();
         String tableQualifiedName  = qualifiedNameAboveTable + SupportedTypes.SEPARATOR_CHAR + tableName;
@@ -82,6 +85,9 @@ public class HMSToOMRSInstanceEventMapper {
 
         newTableEntity.setVersion(System.currentTimeMillis());
         newTableEntity.setProperties(instanceProperties);
+        newTableEntity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+        newTableEntity.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
+        newTableEntity.setStatus(InstanceStatus.ACTIVE);
         //TypeEmbeddedAttribute
         repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_TABLE_TYPE, newTableEntity, null) ;
         String tableType = hmsTable.getTableType();
@@ -118,7 +124,7 @@ public class HMSToOMRSInstanceEventMapper {
                 EntityDetail newColumnEntity = new EntityDetail();
                 String columnName = fieldSchema.getName();
                 newColumnEntity.setVersion(System.currentTimeMillis());
-                newColumnEntity.setType(SupportedTypes.COLUMN_TYPE);
+                newColumnEntity.setType(SupportedTypes.RELATIONAL_COLUMN_INSTANCETYPE);
     
                 String columnQualifiedName = tableQualifiedName+"."+ columnName;
                 String columnGUID = null;
@@ -140,16 +146,21 @@ public class HMSToOMRSInstanceEventMapper {
                         columnName,
                         methodName);
                 newColumnEntity.setProperties(colProperties);
-                
+                newColumnEntity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+                newColumnEntity.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
+                newColumnEntity.setStatus(InstanceStatus.ACTIVE);
                 //TypeEmbeddedAttribute
                 repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_COLUMN_TYPE, newColumnEntity, fieldSchema.getType()) ;
 
-                instanceEvents.add(omrsInstanceEventBuilder.buildNewEntityEvent(newTableEntity));
+                instanceEvents.add(omrsInstanceEventBuilder.buildNewEntityEvent(newColumnEntity));
                 Relationship newRelationship = repositoryHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
                         tableGUID,
                         SupportedTypes.TABLE,
                         columnGUID,
                         SupportedTypes.COLUMN);
+                newRelationship.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+                newRelationship.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
+                newRelationship.setStatus(InstanceStatus.ACTIVE);
                 instanceEvents.add(omrsInstanceEventBuilder.buildNewRelationshipEvent(newRelationship));
             }
         }
@@ -176,7 +187,7 @@ public class HMSToOMRSInstanceEventMapper {
             throw new RuntimeException(e);
         }
 
-        entity.setType(SupportedTypes.TABLE_TYPE);
+        entity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
         omrsInstanceEventBuilder.buildDeletedEntityEvent(entity);
 
         return instanceEvents;

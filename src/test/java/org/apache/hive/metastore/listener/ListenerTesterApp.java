@@ -16,21 +16,21 @@ import java.util.List;
 public class ListenerTesterApp {
     public static void main(String[] args) throws MetaException {
         Configuration config = new Configuration();
-
-        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"1");
-        config.set(HMSListener.CONFIG_SERVER_NAME, "aaa");
-        config.set(HMSListener.CONFIG_QUALIFIEDNAME_ABOVE_TABLE, "todo");
-        config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
-        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"topic1");
+// TODO change these to match your system
+        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"metadata collection id");
+        config.set(HMSListener.CONFIG_SERVER_NAME, "server1");
+        config.set(HMSListener.CONFIG_QUALIFIEDNAME_ABOVE_TABLE, "data-engine::spark.default.deployed-schema.relational-DB-Schema-Type");
+       // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
+        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
-        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "1");
+        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "4");
         config.set(HMSListener.CONFIG_ACTIVE_FLAG,"ON");
 
         HMSListener hmsListener = new HMSListener(config);
 
         Table table = new Table();
-        table.setDbName("db");
-        table.setCatName("cat");
+        table.setDbName("default");
+        table.setCatName("spark");
         table.setTableName("Test1");
         StorageDescriptor sd = new StorageDescriptor();
         List<FieldSchema> cols = new ArrayList<>();
@@ -47,10 +47,16 @@ public class ListenerTesterApp {
 
     }
 
+    /**
+     * Unfortunately HMS 3.1.3 and HMS 4.0.0 alpha 2 have different constructor parameters for CreateTableEvent, this method uses reflection
+     * to try each constructor shape.
+     * @param table the table to put in the CreateTableEvent
+     * @return CreateTableEvent
+     */
     private static CreateTableEvent getCreateTableEvent(Table table) {
         CreateTableEvent tableEvent;
         try {
-            Class<?> createTableEventclass = Class.forName("CreateTableEvent");
+            Class<?> createTableEventclass = Class.forName("org.apache.hadoop.hive.metastore.events.CreateTableEvent");
             Constructor constructor = null;
             boolean isV4 = false;
             try {

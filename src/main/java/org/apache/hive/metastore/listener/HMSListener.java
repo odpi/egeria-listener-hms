@@ -21,7 +21,7 @@ import java.util.List;
 public class HMSListener extends MetaStoreEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(HMSListener.class);
-
+    private static   ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     /*
     property values
      */
@@ -118,9 +118,10 @@ public class HMSListener extends MetaStoreEventListener {
             List<OMRSInstanceEvent> events = hmsToOMRSInstanceEventMapper.getEventsForCreateTable(tableEvent);
 
             for ( OMRSInstanceEvent event:events) {
-                ObjectMapper om = new ObjectMapper();
+
                 try {
-                    String eventStr = om.writeValueAsString(event);
+                    String eventStr = OBJECT_MAPPER.writeValueAsString(event.getOMRSEventV1());
+
                     kafkaClient.sendEvent(eventStr);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
@@ -148,9 +149,9 @@ public class HMSListener extends MetaStoreEventListener {
             List<OMRSInstanceEvent> events =  hmsToOMRSInstanceEventMapper.getEventsForDropTable(tableEvent) ;
 
             for ( OMRSInstanceEvent event:events) {
-                ObjectMapper om = new ObjectMapper();
+
                 try {
-                    String eventStr = om.writeValueAsString(event);
+                    String eventStr = OBJECT_MAPPER.writeValueAsString(event);
                     kafkaClient.sendEvent(eventStr);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
@@ -225,35 +226,6 @@ public class HMSListener extends MetaStoreEventListener {
 //            throw new MetaException( ex.getMessage() );
 //        }
 //
-//
-//    }
-
-
-//    /**
-//     *
-//     * @param event       the bean transformed into the JSON to be posted to kafka
-//
-//     * @throws MetaException
-//     */
-//    private void postEvent( Object event) throws MetaException {
-//
-//        if( logger.isDebugEnabled()) {
-//            logger.debug( String.format("postEvent %n%s", event.toString()));
-//        }
-//
-//        ObjectMapper objMapper = new ObjectMapper();
-//        try {
-//            String json = objMapper.writeValueAsString(event);
-//
-//            /*
-//            posting to kafka to be added later
-//             */
-//
-//            System.out.printf("Event %n%s%n",json);
-//
-//        } catch (Exception ex) {
-//            handleException("An Exception was thrown mapping an event to json", ex);
-//        }
 //
 //    }
 

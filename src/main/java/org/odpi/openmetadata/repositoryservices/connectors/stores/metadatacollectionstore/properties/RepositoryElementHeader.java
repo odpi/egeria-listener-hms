@@ -5,7 +5,6 @@ package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacolle
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;

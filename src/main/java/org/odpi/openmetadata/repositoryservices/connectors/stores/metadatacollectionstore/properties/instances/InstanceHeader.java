@@ -1,5 +1,6 @@
-package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
+package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;
 
 
 import com.fasterxml.jackson.annotation.*;
@@ -10,7 +11,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_ONLY;
 
 /**
- * org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceHeader manages the attributes that are common to entities and relationship instances.  This includes
+ * InstanceHeader manages the attributes that are common to entities and relationship instances.  This includes
  * its unique identifier and URL along with information about its type, provenance and change history.
  */
 @JsonAutoDetect(getterVisibility=PUBLIC_ONLY, setterVisibility=PUBLIC_ONLY, fieldVisibility=NONE)
@@ -21,8 +22,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
         include = JsonTypeInfo.As.PROPERTY,
         property = "class")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = EntitySummary.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntitySummary"),
-        @JsonSubTypes.Type(value = Relationship.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Relationship")
+        @JsonSubTypes.Type(value = EntitySummary.class, name = "EntitySummary"),
+        @JsonSubTypes.Type(value = Relationship.class, name = "Relationship")
 })
 public abstract class InstanceHeader extends InstanceAuditHeader
 {
@@ -137,7 +138,7 @@ public abstract class InstanceHeader extends InstanceAuditHeader
      */
     @Override
     public String toString() {
-        return "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceHeader{" +
+        return "InstanceHeader{" +
                 "headerVersion=" + getHeaderVersion() +
                 ", type=" + getType() +
                 ", instanceProvenanceType=" + getInstanceProvenanceType() +

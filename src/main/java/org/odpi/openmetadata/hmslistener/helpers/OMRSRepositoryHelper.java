@@ -24,6 +24,22 @@ public class OMRSRepositoryHelper {
 
     }
 
+    public String getMetadataCollectionId() {
+        return metadataCollectionId;
+    }
+
+    public void setMetadataCollectionId(String metadataCollectionId) {
+        this.metadataCollectionId = metadataCollectionId;
+    }
+
+    public String getMetadataCollectionName() {
+        return metadataCollectionName;
+    }
+
+    public void setMetadataCollectionName(String metadataCollectionName) {
+        this.metadataCollectionName = metadataCollectionName;
+    }
+
     public InstanceProperties addStringPropertyToInstance(String sourceName,
                                                           InstanceProperties properties,
                                                           String propertyName,

@@ -1,5 +1,6 @@
-package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;/* SPDX-License-Identifier: Apache-2.0 */
+/* SPDX-License-Identifier: Apache-2.0 */
 /* Copyright Contributors to the ODPi Egeria project. */
+package org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -12,7 +13,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
 
 
 /**
- * org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntitySummary provides the basic header attributes for an open metadata entity.
+ * EntitySummary provides the basic header attributes for an open metadata entity.
  * This includes a summary of its type, its unique
  * identifier (guid) last update date and a list of the classifications for the entity.
  */
@@ -24,8 +25,8 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.PUBLIC_
         include = JsonTypeInfo.As.PROPERTY,
         property = "class")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = EntityDetail.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail"),
-        @JsonSubTypes.Type(value = EntityProxy.class, name = "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityProxy")
+        @JsonSubTypes.Type(value = EntityDetail.class, name = "EntityDetail"),
+        @JsonSubTypes.Type(value = EntityProxy.class, name = "EntityProxy")
 })
 public class EntitySummary extends InstanceHeader
 {
@@ -99,7 +100,7 @@ public class EntitySummary extends InstanceHeader
     /**
      * Set up the classifications for an entity.  This is stored as an iterator.
      *
-     * @param classifications org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Classification list
+     * @param classifications Classification list
      */
     public void setClassifications(List<Classification> classifications)
     {
@@ -114,7 +115,7 @@ public class EntitySummary extends InstanceHeader
      */
     @Override
     public String toString() {
-        return "org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntitySummary{" +
+        return "EntitySummary{" +
                 "classifications=" + classifications +
                 ", headerVersion=" + getHeaderVersion() +
                 ", type=" + getType() +
