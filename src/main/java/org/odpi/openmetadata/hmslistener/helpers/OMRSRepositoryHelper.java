@@ -88,7 +88,7 @@ public class OMRSRepositoryHelper {
      * @param dataType column type if a column
      * @return the embedded type classification
      */
-    public Classification createTypeEmbeddedClassification(String apiName, String type, EntityDetail entity, String dataType)  {
+    public EntityDetail createTypeEmbeddedClassification(String apiName, String type, EntityDetail entity, String dataType)  {
         String methodName = "createTypeEmbeddedClassification";
         Classification classification = new Classification();
         classification.setName(SupportedTypes.TYPE_EMBEDDED_ATTRIBUTE);
@@ -99,11 +99,11 @@ public class OMRSRepositoryHelper {
             addStringPropertyToInstance(methodName, instanceProperties, "dataType", dataType, methodName);
         }
         classification.setProperties(instanceProperties);
-        addClassificationToEntity(methodName, entity, classification, methodName);
-        return classification;
+        return addClassificationToEntity(methodName, entity, classification, methodName);
+
 
     }
-    public Classification createCalculatedValueClassification(String apiName, EntityDetail entity) {
+    public EntityDetail createCalculatedValueClassification(String apiName, EntityDetail entity) {
 
         String methodName = "createCalculatedValueClassification";
         Classification classification = new Classification();
@@ -113,8 +113,7 @@ public class OMRSRepositoryHelper {
 //        classification.setProperties(instanceProperties);
         classification.setVersion(System.currentTimeMillis());
         // TODO origin
-        addClassificationToEntity(methodName, entity, classification, methodName);
-        return classification;
+        return addClassificationToEntity(methodName, entity, classification, methodName);
 
     }
 

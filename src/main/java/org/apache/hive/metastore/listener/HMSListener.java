@@ -40,11 +40,8 @@ public class HMSListener extends MetaStoreEventListener {
     public static final String CONFIG_SERVER_NAME = "EgeriaListener.serverName";
     public static final String CONFIG_ORGANISATION_NAME = "EgeriaListener.organisationName";
 
-    public static final String CONFIG_QUALIFIEDNAME_ABOVE_TABLE = "EgeriaListener.qualifiedNameAboveTable";
+    public static final String CONFIG_QUALIFIEDNAME_PREFIX = "EgeriaListener.qualifiedNamePrefix";
 
-    public static final String CONFIG_CATALOG = "EgeriaListener.catalogName";
-
-    public static final String CONFIG_DB = "EgeriaListener.databaseName";
 
     // Kafka config
     public static final String CONFIG_KAFKA_TOPIC_NAME = "EgeriaListener.events.kafka.topicname";
@@ -62,12 +59,13 @@ public class HMSListener extends MetaStoreEventListener {
 
     private String metadatadCollectionId = null;
     private String serverName = null;
-    private String qualifiedNameAboveTable = null;
+    private String qualifiednamePrefix = null;
+
     private String organisationName = null;
 
     private KafkaClient kafkaClient= null;
 
-
+    private String qualifiedNameAboveTable = null;
     public HMSListener(Configuration config) {
         super(config);
 
@@ -84,7 +82,7 @@ public class HMSListener extends MetaStoreEventListener {
     private void initialiseHmstoOMRSInstanceMapperFromConfig(Configuration config) {
         metadatadCollectionId = config.get(CONFIG_METADATA_COLLECTION_ID, "");
         serverName = config.get(CONFIG_SERVER_NAME, "");
-        qualifiedNameAboveTable = config.get(CONFIG_QUALIFIEDNAME_ABOVE_TABLE, "");
+        qualifiednamePrefix = config.get(CONFIG_QUALIFIEDNAME_PREFIX, "");
         organisationName = config.get(CONFIG_ORGANISATION_NAME, "LF");
 
         hmsToOMRSInstanceEventMapper = new HMSToOMRSInstanceEventMapper(
@@ -92,7 +90,7 @@ public class HMSListener extends MetaStoreEventListener {
                 serverName,
                 "Repository Proxy",
                 organisationName,
-                qualifiedNameAboveTable);
+                qualifiednamePrefix);
     }
 
     private void initialiseKafkaClientFromConfig(Configuration config) {
@@ -106,7 +104,7 @@ public class HMSListener extends MetaStoreEventListener {
     }
 
     @Override
-    public void onCreateTable (CreateTableEvent tableEvent) throws MetaException {
+    public void onCreateTable (CreateTableEvent tableEvent) {
 
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("==> onCreateTable %n%s", tableEvent.toString()));
@@ -188,7 +186,7 @@ public class HMSListener extends MetaStoreEventListener {
         }
         if (key.equalsIgnoreCase(CONFIG_METADATA_COLLECTION_ID) ||
                 key.equalsIgnoreCase(CONFIG_SERVER_NAME) ||
-                key.equalsIgnoreCase(CONFIG_QUALIFIEDNAME_ABOVE_TABLE) ||
+                key.equalsIgnoreCase(CONFIG_QUALIFIEDNAME_PREFIX) ||
                 key.equalsIgnoreCase(CONFIG_ORGANISATION_NAME)
         ) {
             getConf().reloadConfiguration();

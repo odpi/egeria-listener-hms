@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Copyright Contributors to the ODPi Egeria project. */
+
+/**
+ * This is the listener package for the Hive Metastore. Our listener is defined in this package
+ */
+package org.apache.hive.metastore.listener;
