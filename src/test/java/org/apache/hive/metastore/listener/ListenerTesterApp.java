@@ -22,13 +22,13 @@ public class ListenerTesterApp {
     public ListenerTesterApp() {
         Configuration config = new Configuration();
 
-        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"1");
-        config.set(HMSListener.CONFIG_SERVER_NAME, "aaa");
-        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "todo");
-        config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
-        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"topic1");
+        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"metadata collection id");
+        config.set(HMSListener.CONFIG_SERVER_NAME, "server1");
+        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "data-engine::spark.default.deployed-schema.relational-DB-Schema-Type");
+        // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
+        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
-        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "1");
+        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "4");
         config.set(HMSListener.CONFIG_ACTIVE_FLAG,"ON");
 
         hmsListener = new HMSListener(config);
@@ -72,23 +72,28 @@ public class ListenerTesterApp {
                 if (tableNameTableMap.isEmpty()) {
                     System.err.println("Nothing to delete");
                 } else {
-                    System.err.println("Choose which table to delete (copy and paste from the below list)");
+                    System.err.println("Choose which table to delete - below are the tables we have created)");
                     for (String tableName : tableNameTableMap.keySet()) {
                         System.err.println(tableName);
                     }
                     String enteredTableName = sc.nextLine();
-                    if (tableNameTableMap.keySet().contains(enteredTableName)) {
+
                         System.err.println("Press Y to delete table " + enteredTableName);
                         String tabledeleteconfirm = sc.nextLine();
                         if (tabledeleteconfirm.equalsIgnoreCase("y")) {
-                            System.err.println("Dropping table " + enteredTableName);
-                            dropTable(enteredTableName);
+                            if (tableNameTableMap.keySet().contains(enteredTableName)) {
+                                System.err.println("Dropping table " + enteredTableName);
+                                dropTable(enteredTableName);
+                                if (tableNameTableMap.keySet().contains(enteredTableName)) {
+                                    tableNameTableMap.remove(enteredTableName);
+                                }
+                            } else {
+                                // need to create the table object including the create time
+                                // then drop
+                            }
                         } else {
                             System.err.println("Aborting delete");
                         }
-                    } else {
-                        System.err.println("Unable to find the table name to delete");
-                    }
                 }
             } else if (op.equalsIgnoreCase("u")) {
                 //TODO
@@ -123,6 +128,8 @@ public class ListenerTesterApp {
         table.setDbName(dbName);
         table.setCatName(catName);
         table.setTableName(tableName);
+        int createTime = (int) new Date().getTime();
+        table.setCreateTime(createTime);
         StorageDescriptor sd = new StorageDescriptor();
         List<FieldSchema> cols = new ArrayList<>();
         for (int i=0; i<5;i++) {
@@ -141,10 +148,7 @@ public class ListenerTesterApp {
 
     }
     private void dropTable(String tableName) throws MetaException {
-        Table table = new Table();
-        table.setDbName(dbName);
-        table.setCatName(catName);
-        table.setTableName(tableName);
+        Table table = tableNameTableMap.get(tableName);
         DropTableEvent tableEvent = getDropTableEvent(table);
         System.err.println("Dropping a Table using event:");
         System.err.println(tableEvent);

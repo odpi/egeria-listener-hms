@@ -27,6 +27,7 @@ public class OMRSInstanceEventBuilder {
         OMRSInstanceEvent instanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.NEW_ENTITY_EVENT,
                 entity);
         instanceEvent.setEventOriginator(eventOriginator);
+        instanceEvent.setHomeMetadataCollectionId(entity.getMetadataCollectionId());
 
         return instanceEvent;
     }
@@ -48,6 +49,8 @@ public class OMRSInstanceEventBuilder {
                 entity);
 
         instanceEvent.setEventOriginator(eventOriginator);
+        instanceEvent.setHomeMetadataCollectionId(entity.getMetadataCollectionId());
+
 
         return instanceEvent;
     }
@@ -58,6 +61,7 @@ public class OMRSInstanceEventBuilder {
                 relationship);
 
         instanceEvent.setEventOriginator(eventOriginator);
+        instanceEvent.setHomeMetadataCollectionId(relationship.getMetadataCollectionId());
 
         return instanceEvent;
     }

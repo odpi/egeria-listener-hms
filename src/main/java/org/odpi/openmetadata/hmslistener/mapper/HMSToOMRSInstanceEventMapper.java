@@ -21,10 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Iterator;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 
 public class HMSToOMRSInstanceEventMapper {
@@ -63,15 +61,12 @@ public class HMSToOMRSInstanceEventMapper {
         EntityDetail newTableEntity = new EntityDetail();
         newTableEntity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
         Table hmsTable = createTableEvent.getTable();
+        String qualifiedNameAboveTable = null;
         String tableName = hmsTable.getTableName();
-        String catalogName = hmsTable.getCatName();
-        String dbName = hmsTable.getDbName();
-        String qualifiedNameForDB = qualifiedNamePrefix + "::" + catalogName + SupportedTypes.SEPARATOR_CHAR + dbName;
-        String qualifiedNameAboveTable = qualifiedNameForDB +
-                SupportedTypes.SEPARATOR_CHAR +
-                SupportedTypes.DEFAULT_DEPLOYED_SCHEMA_TOKEN_NAME +
-                SupportedTypes.SEPARATOR_CHAR +
-                SupportedTypes.DEFAULT_RELATIONAL_DB_SCHEMA_TYPE ;
+
+
+
+         qualifiedNameAboveTable = getQualifiedNameAboveTable(hmsTable);
 
         String tableQualifiedName  = qualifiedNameAboveTable + SupportedTypes.SEPARATOR_CHAR + tableName;
         String tableGUID = null;
@@ -82,6 +77,8 @@ public class HMSToOMRSInstanceEventMapper {
             // TODO deal with error properly
             throw new RuntimeException(e);
         }
+        Date createTime = new Date(hmsTable.getCreateTime());
+        newTableEntity.setCreateTime(createTime);
         InstanceProperties instanceProperties = repositoryHelper.addStringPropertyToInstance("Egeria HMS listener",
                 null,
                 "qualifiedName",
@@ -119,6 +116,7 @@ public class HMSToOMRSInstanceEventMapper {
                     SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE,
                     tableGUID,
                     SupportedTypes.TABLE);
+            newRelationship.setCreateTime(createTime);
             instanceEvents.add(omrsInstanceEventBuilder.buildNewRelationshipEvent(newRelationship));
 
         } catch (UnsupportedEncodingException e) {
@@ -162,9 +160,9 @@ public class HMSToOMRSInstanceEventMapper {
                 newColumnEntity.setStatus(InstanceStatus.ACTIVE);
                 //TypeEmbeddedAttribute
                 newColumnEntity = repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_COLUMN_TYPE, newColumnEntity, fieldSchema.getType()) ;
-
+                newColumnEntity.setCreateTime(createTime);
                 instanceEvents.add(omrsInstanceEventBuilder.buildNewEntityEvent(newColumnEntity));
-                Relationship newRelationship = repositoryHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
+                Relationship newRelationship = repositoryHelper.createReferenceRelationship(SupportedTypes.NESTED_SCHEMA_ATTRIBUTE,
                         tableGUID,
                         SupportedTypes.TABLE,
                         columnGUID,
@@ -172,6 +170,7 @@ public class HMSToOMRSInstanceEventMapper {
                 newRelationship.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
                 newRelationship.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
                 newRelationship.setStatus(InstanceStatus.ACTIVE);
+                newRelationship.setCreateTime(createTime);
                 instanceEvents.add(omrsInstanceEventBuilder.buildNewRelationshipEvent(newRelationship));
             }
         }
@@ -182,14 +181,25 @@ public class HMSToOMRSInstanceEventMapper {
         return instanceEvents;
     }
 
-
+    private String getQualifiedNameAboveTable(Table hmsTable ) {
+        return qualifiedNamePrefix + "::" +
+                hmsTable.getCatName() +
+                SupportedTypes.SEPARATOR_CHAR +
+                hmsTable.getDbName() +
+                SupportedTypes.SEPARATOR_CHAR +
+                SupportedTypes.DEFAULT_DEPLOYED_SCHEMA_TOKEN_NAME +
+                SupportedTypes.SEPARATOR_CHAR +
+                SupportedTypes.DEFAULT_RELATIONAL_DB_SCHEMA_TYPE ;
+    }
 
 
     public List<OMRSInstanceEvent> getEventsForDropTable(DropTableEvent dropTableEvent) {
         List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
         EntityDetail entity = new EntityDetail();
         // get qualifiedName of table and calculate the guid from it
-        String qualifiedName  = qualifiedNameAboveTable + SupportedTypes.SEPARATOR_CHAR + dropTableEvent.getTable().getTableName();
+        Table tabletoDelete = dropTableEvent.getTable();
+
+        String qualifiedName = getQualifiedNameAboveTable(tabletoDelete) + SupportedTypes.SEPARATOR_CHAR + tabletoDelete.getTableName();
         try {
             String guid = Base64.getUrlEncoder().encodeToString(qualifiedName.getBytes("UTF-8"));
             entity.setGUID(guid);
@@ -199,8 +209,10 @@ public class HMSToOMRSInstanceEventMapper {
         }
 
         entity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
-        omrsInstanceEventBuilder.buildDeletedEntityEvent(entity);
-
+        entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+        entity.setCreateTime(new Date(tabletoDelete.getCreateTime()));
+        entity.setVersion(new Date().getTime());
+        instanceEvents.add(omrsInstanceEventBuilder.buildDeletedEntityEvent(entity));
         return instanceEvents;
     }
     public List<OMRSInstanceEvent> alterTable(AlterTableEvent alterTableEvent) {
