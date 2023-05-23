@@ -33,7 +33,7 @@ public class OMRSInstanceEventBuilder {
     }
 
     /**
-     *
+     * build new Instance events for a new table
      * @param hmsTable hmsTable to map into Egeria events
      * @param qualifiedNameAboveTable the qualifiedName above the table
      * @return list of Egeria events that represent the creation of the table
