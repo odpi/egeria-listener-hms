@@ -103,14 +103,11 @@ public class OMRSRepositoryHelper {
 
 
     }
-    public EntityDetail createCalculatedValueClassification(String apiName, EntityDetail entity) {
+    public EntityDetail createCalculatedValueClassification( EntityDetail entity) {
 
         String methodName = "createCalculatedValueClassification";
         Classification classification = new Classification();
         classification.setName(SupportedTypes.CALCULATED_VALUE);
-        // TODO is there any properties  we need to take around the view
-//        InstanceProperties instanceProperties = new InstanceProperties();
-//        classification.setProperties(instanceProperties);
         classification.setVersion(System.currentTimeMillis());
         // TODO origin
         return addClassificationToEntity(methodName, entity, classification, methodName);

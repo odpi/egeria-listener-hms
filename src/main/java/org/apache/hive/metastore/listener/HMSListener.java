@@ -114,17 +114,7 @@ public class HMSListener extends MetaStoreEventListener {
             // issue the event
 
             List<OMRSInstanceEvent> events = hmsToOMRSInstanceEventMapper.getEventsForCreateTable(tableEvent);
-
-            for ( OMRSInstanceEvent event:events) {
-
-                try {
-                    String eventStr = OBJECT_MAPPER.writeValueAsString(event.getOMRSEventV1());
-
-                    kafkaClient.sendEvent(eventStr);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            sendEvents(events);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("<== onCreateTable");
@@ -138,23 +128,14 @@ public class HMSListener extends MetaStoreEventListener {
     @Override
     public void onDropTable (DropTableEvent tableEvent)  throws MetaException {
         if (logger.isDebugEnabled()) {
-            logger.debug(String.format("==> onDropTable %n%s", tableEvent.toString()));
+            logger.debug(String.format("==> onDropTable %s", tableEvent.toString()));
         }
 
         if (issueEventRequired) {
-            // issue the event
+            // issue the events
 
             List<OMRSInstanceEvent> events =  hmsToOMRSInstanceEventMapper.getEventsForDropTable(tableEvent) ;
-
-            for ( OMRSInstanceEvent event:events) {
-
-                try {
-                    String eventStr = OBJECT_MAPPER.writeValueAsString(event);
-                    kafkaClient.sendEvent(eventStr);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            sendEvents(events);
         }
         if (logger.isDebugEnabled()) {
             logger.debug("<== onDropTable");
@@ -168,6 +149,19 @@ public class HMSListener extends MetaStoreEventListener {
      */
     @Override
     public void onAlterTable (AlterTableEvent tableEvent) throws MetaException {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("==> onAlterTable %s", tableEvent.toString()));
+        }
+
+        if (issueEventRequired) {
+            // issue the events
+
+            List<OMRSInstanceEvent> events =  hmsToOMRSInstanceEventMapper.getEventsForAlterTable(tableEvent) ;
+            sendEvents(events);
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("<== onAlterTable");
+        }
     }
 
     @Override
@@ -198,6 +192,18 @@ public class HMSListener extends MetaStoreEventListener {
         ) {
             getConf().reloadConfiguration();
             initialiseKafkaClientFromConfig(getConf());
+        }
+    }
+    private void  sendEvents(List<OMRSInstanceEvent> events) {
+        for ( OMRSInstanceEvent event:events) {
+
+            try {
+                String eventStr = OBJECT_MAPPER.writeValueAsString(event.getOMRSEventV1());
+
+                kafkaClient.sendEvent(eventStr);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
