@@ -6,6 +6,7 @@ import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.StorageDescriptor;
 import org.apache.hadoop.hive.metastore.api.Table;
+import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 
@@ -22,13 +23,13 @@ public class ListenerTesterApp {
     public ListenerTesterApp() {
         Configuration config = new Configuration();
 
-        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"1");
-        config.set(HMSListener.CONFIG_SERVER_NAME, "aaa");
-        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "todo");
-        config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
-        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"topic1");
+        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
+        config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
+        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
+        // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
+        config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
-        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "1");
+        config.set(HMSListener.CONFIG_KAFKA_CLIENT_ID, "4");
         config.set(HMSListener.CONFIG_ACTIVE_FLAG,"ON");
 
         hmsListener = new HMSListener(config);
@@ -46,15 +47,15 @@ public class ListenerTesterApp {
         dbName = validateName(sc, "Database");
         boolean processing = true;
         while (processing) {
-            System.out.print("");
-            System.out.print("Enter the table operation - a to add, d to delete u to update, q to quit:\n ");
+            System.out.println("");
+            System.out.println("Enter the table operation - a to add, d to delete u to update, q to quit:\n ");
 
             String op = sc.nextLine();              //reads string
             if (op.equalsIgnoreCase("a")) {
                 String tableName = null;
                 boolean tableNãmeInvalid = true;
                 while(tableNãmeInvalid) {
-                    System.out.print("Enter the table name");
+                    System.out.println("Enter the table name");
                     tableName = sc.nextLine();
                     if (tableName == null || tableName.equals("")) {
                         System.err.println("table name must be entered");
@@ -72,30 +73,132 @@ public class ListenerTesterApp {
                 if (tableNameTableMap.isEmpty()) {
                     System.err.println("Nothing to delete");
                 } else {
-                    System.err.println("Choose which table to delete (copy and paste from the below list)");
+                    System.err.println("Choose which table to delete - below are the tables we have created)");
                     for (String tableName : tableNameTableMap.keySet()) {
                         System.err.println(tableName);
                     }
                     String enteredTableName = sc.nextLine();
-                    if (tableNameTableMap.keySet().contains(enteredTableName)) {
-                        System.err.println("Press Y to delete table " + enteredTableName);
-                        String tabledeleteconfirm = sc.nextLine();
-                        if (tabledeleteconfirm.equalsIgnoreCase("y")) {
+
+                    System.err.println("Press Y to delete table " + enteredTableName);
+                    String tabledeleteconfirm = sc.nextLine();
+                    if (tabledeleteconfirm.equalsIgnoreCase("y")) {
+                        if (tableNameTableMap.keySet().contains(enteredTableName)) {
                             System.err.println("Dropping table " + enteredTableName);
                             dropTable(enteredTableName);
+                            if (tableNameTableMap.keySet().contains(enteredTableName)) {
+                                tableNameTableMap.remove(enteredTableName);
+                            }
                         } else {
-                            System.err.println("Aborting delete");
+                            // need to create the table object including the create time
+                            // then drop
                         }
                     } else {
-                        System.err.println("Unable to find the table name to delete");
+                        System.err.println("Aborting delete");
                     }
                 }
             } else if (op.equalsIgnoreCase("u")) {
-                //TODO
+                System.err.println("Choose which table to update - below are the tables we have created)");
+                for (String tableName : tableNameTableMap.keySet()) {
+                    System.err.println(tableName);
+                }
+                String enteredTableName = sc.nextLine();
+
+//                System.err.println("Press Y to update table " + enteredTableName);
+                System.out.println("");
+                System.out.println("Existing table has columns:");
+                Table oldTable = tableNameTableMap.get(enteredTableName);
+                Iterator<FieldSchema>  colsIterator = oldTable.getSd().getColsIterator();
+                while(colsIterator.hasNext()) {
+                    FieldSchema fieldSchema =colsIterator.next();
+                    System.out.println("Name:"+fieldSchema.getName()+",type:"+ fieldSchema.getType() );
+                }
+
+                System.out.println("Enter a column operation - a to add, d to delete u to update, q to quit: ");
+
+                String colOp = sc.nextLine();              //reads string
+                if (colOp.equalsIgnoreCase("a")) {
+                    String colName = null;
+                    boolean colNameInvalid = true;
+                    while(colNameInvalid) {
+                        System.out.println("Enter the new column name");
+                        colName = sc.nextLine();
+                        if (colName == null || colName.equals("")) {
+                            System.err.println("column name must be entered");
+                        } else if (colName.contains(" ")) {
+                            System.err.println("column name cannot contain blanks");
+                        } else {
+                            colNameInvalid = false;
+                        }
+                    }
+
+                    // TODO check if already a column name
+                    Table newTable = oldTable.deepCopy();
+                    newTable.getSd().addToCols(new FieldSchema(colName, "String", null));
+
+                    AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);
+                    tableNameTableMap.put(enteredTableName, newTable);
+                    hmsListener.onAlterTable(alterTableEvent);
+
+
+                } else if (op.equalsIgnoreCase("d")) {
+//                    if (tableNameTableMap.isEmpty()) {
+//                        System.err.println("Nothing to delete");
+//                    } else {u
+//                        System.err.println("Choose which table to delete - below are the tables we have created)");
+//                        for (String tableName : tableNameTableMap.keySet()) {
+//                            System.err.println(tableName);
+//                        }
+//                        enteredTableName = sc.nextLine();
+//
+//                        System.err.println("Press Y to delete table " + enteredTableName);
+//                        String tabledeleteconfirm = sc.nextLine();
+//                        if (tabledeleteconfirm.equalsIgnoreCase("y")) {
+//                            if (tableNameTableMap.keySet().contains(enteredTableName)) {
+//                                System.err.println("Dropping table " + enteredTableName);
+//                                dropTable(enteredTableName);
+//                                if (tableNameTableMap.keySet().contains(enteredTableName)) {
+//                                    tableNameTableMap.remove(enteredTableName);
+//                                }
+//                            } else {
+//                                // need to create the table object including the create time
+//                                // then drop
+//                            }
+//                        } else {
+//                            System.err.println("Aborting delete");
+//                        }
+//                    }
+
+//                    System.err.println("Choose which table to update - below are the tables we have created)");
+//                    for (String tableName : tableNameTableMap.keySet()) {
+//                        System.err.println(tableName);
+//                    }
+//                    enteredTableName = sc.nextLine();
+//
+//                    System.err.println("Press Y to update table " + enteredTableName);
+//                    System.out.println("");
+//                    System.out.println("Enter a column operation - a to add, d to delete u to update, q to quit:\n ");
+//
+//
+//
+//
+//
+//
+//
+
+                } else if (op.equalsIgnoreCase("q")) {
+                    processing = false;
+                } else {
+                    System.out.println("Invalid Operation :" + op);
+                }
+
+
+
+
+
             } else if (op.equalsIgnoreCase("q")) {
                 processing = false;
             } else {
-                System.out.print("Invalid Operation :" + op);
+                System.out.println("Invalid Operation :" + op);
             }
         }
     }
@@ -104,7 +207,7 @@ public class ListenerTesterApp {
         String artifiactValue = null;
         boolean nameInvalid = true;
         while(nameInvalid) {
-            System.out.print("Enter the " + artifiactName +" name :\n ");
+            System.out.println("Enter the " + artifiactName +" name :\n ");
             artifiactValue = sc.nextLine();
             if (artifiactValue == null || artifiactValue.equals("")) {
                 System.err.println(artifiactName + " name must be entered");
@@ -123,6 +226,8 @@ public class ListenerTesterApp {
         table.setDbName(dbName);
         table.setCatName(catName);
         table.setTableName(tableName);
+        int createTime = (int) new Date().getTime();
+        table.setCreateTime(createTime);
         StorageDescriptor sd = new StorageDescriptor();
         List<FieldSchema> cols = new ArrayList<>();
         for (int i=0; i<5;i++) {
@@ -141,10 +246,7 @@ public class ListenerTesterApp {
 
     }
     private void dropTable(String tableName) throws MetaException {
-        Table table = new Table();
-        table.setDbName(dbName);
-        table.setCatName(catName);
-        table.setTableName(tableName);
+        Table table = tableNameTableMap.get(tableName);
         DropTableEvent tableEvent = getDropTableEvent(table);
         System.err.println("Dropping a Table using event:");
         System.err.println(tableEvent);
@@ -161,7 +263,7 @@ public class ListenerTesterApp {
                 constructor = dropTableEventclass.getDeclaredConstructor(Table.class, boolean.class, boolean.class, IHMSHandler.class);
                 tableEvent = (DropTableEvent) constructor.newInstance(table, true, false,  null);
             } catch (NoSuchMethodException e) {
-                    // we expect this if running against hms v3.1.3
+                // we expect this if running against hms v3.1.3
             }
 
             if (constructor == null) {
@@ -203,6 +305,42 @@ public class ListenerTesterApp {
             if (constructor == null) {
                 constructor = createTableEventclass.getDeclaredConstructor(Table.class, boolean.class, IHMSHandler.class);
                 tableEvent = (CreateTableEvent) constructor.newInstance(table, true, null);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return tableEvent;
+    }
+    /**
+     * Unfortunately HMS 3.1.3 and HMS 4.0.0 alpha 2 have different constructor parameters for AlterTableEvent, this method uses reflection
+     * to try each constructor shape.
+     * @param oldTable the table to put in the CreateTableEvent
+     * @param newTable
+     * @return alterTableEvent
+     */
+    private static AlterTableEvent getAlterTableEvent(Table oldTable, Table newTable) {
+        AlterTableEvent tableEvent = null;
+        try {
+            Class<?> alterTableEventclass = Class.forName("org.apache.hadoop.hive.metastore.events.AlterTableEvent");
+            Constructor constructor = null;
+            try {
+                constructor = alterTableEventclass.getDeclaredConstructor(Table.class, Table.class, boolean.class, boolean.class, IHMSHandler.class);
+                tableEvent = (AlterTableEvent) constructor.newInstance(oldTable, newTable, true, true, null);
+            } catch (NoSuchMethodException e) {
+                // we expect this if running against hms v3.1.3
+            }
+
+            if (constructor == null) {
+                constructor = alterTableEventclass.getDeclaredConstructor(Table.class, Table.class, boolean.class, boolean.class, IHMSHandler.class, boolean.class);
+                tableEvent = (AlterTableEvent) constructor.newInstance(oldTable, newTable, true, true, null, true);
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);

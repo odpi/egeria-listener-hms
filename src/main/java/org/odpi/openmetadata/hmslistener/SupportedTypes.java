@@ -76,6 +76,12 @@ public class SupportedTypes {
             TABLE,
             1L
     );
+    public static final InstanceType RELATIONAL_DB_SCHEMA_TYPE_TYPE = new InstanceType(
+            TypeDefCategory.ENTITY_DEF,
+            "f20f5f45-1afb-41c1-9a09-34d8812626a4",
+            RELATIONAL_DB_SCHEMA_TYPE,
+            1L
+    );
     // relationships and types
     public static final InstanceType ATTRIBUTE_FOR_SCHEMA_TYPE = new InstanceType(
             TypeDefCategory.RELATIONSHIP_DEF,
