@@ -2,8 +2,6 @@
 /* Copyright Contributors to the ODPi Egeria project. */
 package org.odpi.openmetadata.hmslistener.mapper;
 
-
-import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.Table;
 import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
@@ -11,17 +9,13 @@ import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 import org.apache.hive.metastore.listener.HMSListener;
 import org.odpi.openmetadata.hmslistener.SupportedTypes;
 import org.odpi.openmetadata.hmslistener.helpers.OMRSRepositoryHelper;
-import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.EntityDetail;
-import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceProperties;
-import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.InstanceStatus;
-import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.Relationship;
+import org.odpi.openmetadata.repositoryservices.connectors.stores.metadatacollectionstore.properties.instances.*;
 import org.odpi.openmetadata.repositoryservices.events.OMRSEventOriginator;
 import org.odpi.openmetadata.repositoryservices.events.OMRSInstanceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -29,8 +23,6 @@ public class HMSToOMRSInstanceEventMapper {
 
     private static final Logger logger = LoggerFactory.getLogger(HMSListener.class);
     private String qualifiedNamePrefix = null;
-
-    String qualifiedNameAboveTable = null;
 
     private OMRSInstanceEventBuilder omrsInstanceEventBuilder = null;
 
@@ -57,129 +49,130 @@ public class HMSToOMRSInstanceEventMapper {
         if(logger.isDebugEnabled()) {
             logger.debug("==> " + methodName);
         }
-        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
-        EntityDetail newTableEntity = new EntityDetail();
-        newTableEntity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
+
         Table hmsTable = createTableEvent.getTable();
-        String qualifiedNameAboveTable = null;
-        String tableName = hmsTable.getTableName();
 
-
-
-         qualifiedNameAboveTable = getQualifiedNameAboveTable(hmsTable);
-
-        String tableQualifiedName  = qualifiedNameAboveTable + SupportedTypes.SEPARATOR_CHAR + tableName;
-        String tableGUID = null;
-        try {
-            tableGUID = Base64.getUrlEncoder().encodeToString(tableQualifiedName.getBytes("UTF-8"));
-            newTableEntity.setGUID(tableGUID);
-        } catch (UnsupportedEncodingException e) {
-            // TODO deal with error properly
-            throw new RuntimeException(e);
-        }
-        Date createTime = new Date(hmsTable.getCreateTime());
-        newTableEntity.setCreateTime(createTime);
-        InstanceProperties instanceProperties = repositoryHelper.addStringPropertyToInstance("Egeria HMS listener",
-                null,
-                "qualifiedName",
-                tableQualifiedName,
-                methodName);
-        instanceProperties = repositoryHelper.addStringPropertyToInstance(SupportedTypes.SOURCE_NAME,
-                instanceProperties,
-                "name",
-                tableName,
-                methodName);
-
-        newTableEntity.setVersion(System.currentTimeMillis());
-        newTableEntity.setProperties(instanceProperties);
-        newTableEntity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-        newTableEntity.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
-        newTableEntity.setStatus(InstanceStatus.ACTIVE);
-        //TypeEmbeddedAttribute
-        newTableEntity = repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_TABLE_TYPE, newTableEntity, null) ;
-        String tableType = hmsTable.getTableType();
-
-        if (tableType != null && tableType.equals("VIRTUAL_VIEW")) {
-            //Indicate that this hmsTable is a view using the classification
-            //tableClassifications.add(mapperHelper.createCalculatedValueClassification("refreshRepository", tableEntity, connectorTable.getHmsViewOriginalText()));
-            newTableEntity = repositoryHelper.createCalculatedValueClassification(methodName, newTableEntity) ;
-
-        }
-
-        instanceEvents.add(omrsInstanceEventBuilder.buildNewEntityEvent(newTableEntity));
-        // add relationship
-        String relationalDBTypeGuid = null;
-        try {
-            relationalDBTypeGuid = Base64.getUrlEncoder().encodeToString(qualifiedNameAboveTable.getBytes("UTF-8"));
-            Relationship newRelationship = repositoryHelper.createReferenceRelationship(SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
-                    relationalDBTypeGuid,
-                    SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE,
-                    tableGUID,
-                    SupportedTypes.TABLE);
-            newRelationship.setCreateTime(createTime);
-            instanceEvents.add(omrsInstanceEventBuilder.buildNewRelationshipEvent(newRelationship));
-
-        } catch (UnsupportedEncodingException e) {
-            // TODO deal with error properly
-            throw new RuntimeException(e);
-        }
-
-
-        //TODO add columns
-        if (hmsTable.getSd() != null) {
-            Iterator<FieldSchema> colsIterator = hmsTable.getSd().getColsIterator();
-            while (colsIterator.hasNext()) {
-                FieldSchema fieldSchema = colsIterator.next();
-                EntityDetail newColumnEntity = new EntityDetail();
-                String columnName = fieldSchema.getName();
-                newColumnEntity.setVersion(System.currentTimeMillis());
-                newColumnEntity.setType(SupportedTypes.RELATIONAL_COLUMN_INSTANCETYPE);
-    
-                String columnQualifiedName = tableQualifiedName+"."+ columnName;
-                String columnGUID = null;
-                try {
-                   columnGUID = Base64.getUrlEncoder().encodeToString( columnQualifiedName.getBytes("UTF-8"));
-                   newColumnEntity.setGUID(columnGUID);
-                } catch (UnsupportedEncodingException e) {
-                    // TODO deal with error properly
-                    throw new RuntimeException(e);
-                }
-                InstanceProperties colProperties = repositoryHelper.addStringPropertyToInstance("Egeria HMS listener",
-                        null,
-                        "qualifiedName",
-                        columnQualifiedName,
-                        methodName);
-                colProperties = repositoryHelper.addStringPropertyToInstance(SupportedTypes.SOURCE_NAME,
-                        colProperties,
-                        "name",
-                        columnName,
-                        methodName);
-                newColumnEntity.setProperties(colProperties);
-                newColumnEntity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-                newColumnEntity.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
-                newColumnEntity.setStatus(InstanceStatus.ACTIVE);
-                //TypeEmbeddedAttribute
-                newColumnEntity = repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_COLUMN_TYPE, newColumnEntity, fieldSchema.getType()) ;
-                newColumnEntity.setCreateTime(createTime);
-                instanceEvents.add(omrsInstanceEventBuilder.buildNewEntityEvent(newColumnEntity));
-                Relationship newRelationship = repositoryHelper.createReferenceRelationship(SupportedTypes.NESTED_SCHEMA_ATTRIBUTE,
-                        tableGUID,
-                        SupportedTypes.TABLE,
-                        columnGUID,
-                        SupportedTypes.COLUMN);
-                newRelationship.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-                newRelationship.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
-                newRelationship.setStatus(InstanceStatus.ACTIVE);
-                newRelationship.setCreateTime(createTime);
-                instanceEvents.add(omrsInstanceEventBuilder.buildNewRelationshipEvent(newRelationship));
-            }
-        }
+        List<OMRSInstanceEvent> instanceEvents = omrsInstanceEventBuilder.buildNewTableEvents(hmsTable, getQualifiedNameAboveTable(hmsTable));
 
         if(logger.isDebugEnabled()) {
             logger.debug("<== " + methodName);
         }
         return instanceEvents;
     }
+
+
+    public List<OMRSInstanceEvent> getEventsForDropTable(DropTableEvent dropTableEvent) {
+        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
+
+        // get qualifiedName of table and calculate the guid from it
+        Table tableToDelete = dropTableEvent.getTable();
+        String tableQualifiedName = getQualifiedNameAboveTable(tableToDelete) + SupportedTypes.SEPARATOR_CHAR + tableToDelete.getTableName();
+
+        EntityDetail entity = omrsInstanceEventBuilder.getTableEntityToDelete(tableToDelete, tableQualifiedName);
+        instanceEvents.add(omrsInstanceEventBuilder.buildDeletedEntityEvent(entity));
+        return instanceEvents;
+    }
+
+    /**
+     * Get OMRS instance events for an altertable HMS event
+     * @param alterTableEvent hms event
+     * @return list of omr instance events
+     */
+    public List<OMRSInstanceEvent> getEventsForAlterTable(AlterTableEvent alterTableEvent) {
+
+        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
+
+        // get qualifiedName of table and calculate the guid from it
+        Table oldTable = alterTableEvent.getOldTable();
+        Table newTable = alterTableEvent.getNewTable();
+        String tableQualifiedName = getQualifiedNameAboveTable(newTable) + SupportedTypes.SEPARATOR_CHAR + newTable.getTableName();
+
+
+        // String qualifiedName = getQualifiedNameAboveTable(newTable) + SupportedTypes.SEPARATOR_CHAR + newTable.getTableName();
+
+        // check if we think this is the same table from old to new
+        // if not we need to delete and create
+
+        if (canUpdateTable(oldTable, newTable )) {
+            instanceEvents = omrsInstanceEventBuilder.buildAlterTableEvents(oldTable, newTable, tableQualifiedName);
+        } else {
+            // delete the old table
+            EntityDetail tableEntityToDelete = omrsInstanceEventBuilder.getTableEntityToDelete(oldTable, tableQualifiedName);
+            instanceEvents.add(omrsInstanceEventBuilder.buildDeletedEntityEvent(tableEntityToDelete));
+            // create the new one
+            instanceEvents.addAll(omrsInstanceEventBuilder.buildNewTableEvents(newTable, tableQualifiedName));
+        }
+        return instanceEvents;
+    }
+    private boolean canUpdateTable(Table oldTable, Table newTable ) {
+        boolean canUpdateTable = true;
+        if (!oldTable.getTableName().equals(newTable.getTableName())) {
+            canUpdateTable =false;
+        } else if (!oldTable.getCatName().equals(newTable.getCatName())) {
+            canUpdateTable =false;
+        } else if (!oldTable.getDbName().equals(newTable.getDbName())) {
+            canUpdateTable =false;
+        }
+        return canUpdateTable;
+    }
+
+    public List<OMRSInstanceEvent> alterTable(AlterTableEvent alterTableEvent) {
+        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
+
+
+            return instanceEvents;
+    }
+
+//    private EntityDetail getTableEntityToCreate( Table hmsTable) {
+//        String
+//        EntityDetail newTableEntity = new EntityDetail();
+//        newTableEntity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
+//
+//        String qualifiedNameAboveTable = null;
+//        String tableName = hmsTable.getTableName();
+//
+//
+//
+//        qualifiedNameAboveTable = getQualifiedNameAboveTable(hmsTable);
+//
+//        String tableQualifiedName  = qualifiedNameAboveTable + SupportedTypes.SEPARATOR_CHAR + tableName;
+//        String tableGUID = null;
+//        try {
+//            tableGUID = Base64.getUrlEncoder().encodeToString(tableQualifiedName.getBytes("UTF-8"));
+//            newTableEntity.setGUID(tableGUID);
+//        } catch (UnsupportedEncodingException e) {
+//            // TODO deal with error properly
+//            throw new RuntimeException(e);
+//        }
+//        Date createTime = new Date(hmsTable.getCreateTime());
+//        newTableEntity.setCreateTime(createTime);
+//        InstanceProperties instanceProperties = repositoryHelper.addStringPropertyToInstance("Egeria HMS listener",
+//                null,
+//                "qualifiedName",
+//                tableQualifiedName,
+//                methodName);
+//        instanceProperties = repositoryHelper.addStringPropertyToInstance(SupportedTypes.SOURCE_NAME,
+//                instanceProperties,
+//                "name",
+//                tableName,
+//                methodName);
+//
+//        newTableEntity.setVersion(System.currentTimeMillis());
+//        newTableEntity.setProperties(instanceProperties);
+//        newTableEntity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+//        newTableEntity.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
+//        newTableEntity.setStatus(InstanceStatus.ACTIVE);
+//        //TypeEmbeddedAttribute
+//        newTableEntity = repositoryHelper.createTypeEmbeddedClassification(methodName, SupportedTypes.RELATIONAL_TABLE_TYPE, newTableEntity, null) ;
+//        String tableType = hmsTable.getTableType();
+//
+//        if (tableType != null && tableType.equals("VIRTUAL_VIEW")) {
+//            //Indicate that this hmsTable is a view using the classification
+//            //tableClassifications.add(mapperHelper.createCalculatedValueClassification("refreshRepository", tableEntity, connectorTable.getHmsViewOriginalText()));
+//            newTableEntity = repositoryHelper.createCalculatedValueClassification(methodName, newTableEntity) ;
+//
+//        }
+//    }
 
     private String getQualifiedNameAboveTable(Table hmsTable ) {
         return qualifiedNamePrefix + "::" +
@@ -190,36 +183,6 @@ public class HMSToOMRSInstanceEventMapper {
                 SupportedTypes.DEFAULT_DEPLOYED_SCHEMA_TOKEN_NAME +
                 SupportedTypes.SEPARATOR_CHAR +
                 SupportedTypes.DEFAULT_RELATIONAL_DB_SCHEMA_TYPE ;
-    }
-
-
-    public List<OMRSInstanceEvent> getEventsForDropTable(DropTableEvent dropTableEvent) {
-        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
-        EntityDetail entity = new EntityDetail();
-        // get qualifiedName of table and calculate the guid from it
-        Table tabletoDelete = dropTableEvent.getTable();
-
-        String qualifiedName = getQualifiedNameAboveTable(tabletoDelete) + SupportedTypes.SEPARATOR_CHAR + tabletoDelete.getTableName();
-        try {
-            String guid = Base64.getUrlEncoder().encodeToString(qualifiedName.getBytes("UTF-8"));
-            entity.setGUID(guid);
-        } catch (UnsupportedEncodingException e) {
-            // TODO deal with error properly
-            throw new RuntimeException(e);
-        }
-
-        entity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
-        entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-        entity.setCreateTime(new Date(tabletoDelete.getCreateTime()));
-        entity.setVersion(new Date().getTime());
-        instanceEvents.add(omrsInstanceEventBuilder.buildDeletedEntityEvent(entity));
-        return instanceEvents;
-    }
-    public List<OMRSInstanceEvent> alterTable(AlterTableEvent alterTableEvent) {
-        List<OMRSInstanceEvent> instanceEvents = new ArrayList<>();
-
-
-        return instanceEvents;
     }
 
 }
