@@ -45,49 +45,54 @@ public class OMRSInstanceEventBuilder {
         String tableQualifiedName = qualifiedNameAboveTable +  SupportedTypes.SEPARATOR_CHAR + hmsTable.getTableName();
 
         EntityDetail newTableEntity = mapHMSTableToEntity(hmsTable, tableQualifiedName);
-        Date createTime = newTableEntity.getCreateTime();
-        String tableGUID = newTableEntity.getGUID();
-        OMRSInstanceEvent instanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.NEW_ENTITY_EVENT,
-                newTableEntity);
-        instanceEvent.setEventOriginator(eventOriginator);
-        instanceEvent.setHomeMetadataCollectionId(newTableEntity.getMetadataCollectionId());
-        instanceEvents.add(instanceEvent);
-        // add relationship
-        String relationalDBTypeGuid = null;
-        try {
-            relationalDBTypeGuid = Base64.getUrlEncoder().encodeToString(qualifiedNameAboveTable.getBytes("UTF-8"));
-            Relationship newRelationship = repositoryHelper.createReferenceRelationship(
-                    SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
-                    relationalDBTypeGuid,
-                    SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE,
-                    tableGUID,
-                    SupportedTypes.TABLE);
-            newRelationship.setCreateTime(createTime);
-            instanceEvents.add(buildNewRelationshipEvent(newRelationship));
+        if (newTableEntity == null) {
+            //TODO deal with error
+        } else {
 
-        } catch (UnsupportedEncodingException e) {
-            // TODO deal with error properly
-            throw new RuntimeException(e);
-        }
-
-        if (hmsTable.getSd() != null) {
-            Iterator<FieldSchema> colsIterator = hmsTable.getSd().getColsIterator();
-            while (colsIterator.hasNext()) {
-                FieldSchema fieldSchema = colsIterator.next();
-                EntityDetail newColumnEntity = mapFieldSchemaToEntity(fieldSchema, tableQualifiedName, createTime);
-
-                OMRSInstanceEvent colInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.NEW_ENTITY_EVENT,
-                        newColumnEntity);
-                colInstanceEvent.setEventOriginator(eventOriginator);
-                colInstanceEvent.setHomeMetadataCollectionId(newTableEntity.getMetadataCollectionId());
-                instanceEvents.add(colInstanceEvent);
-                Relationship newRelationship = mapEndGUIDToRelationship(tableGUID, newColumnEntity.getGUID(), createTime);
-
-                newRelationship.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-                newRelationship.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
-                newRelationship.setStatus(InstanceStatus.ACTIVE);
+            Date createTime = newTableEntity.getCreateTime();
+            String tableGUID = newTableEntity.getGUID();
+            OMRSInstanceEvent instanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.NEW_ENTITY_EVENT,
+                    newTableEntity);
+            instanceEvent.setEventOriginator(eventOriginator);
+            instanceEvent.setHomeMetadataCollectionId(newTableEntity.getMetadataCollectionId());
+            instanceEvents.add(instanceEvent);
+            // add relationship
+            String relationalDBTypeGuid = null;
+            try {
+                relationalDBTypeGuid = Base64.getUrlEncoder().encodeToString(qualifiedNameAboveTable.getBytes("UTF-8"));
+                Relationship newRelationship = repositoryHelper.createReferenceRelationship(
+                        SupportedTypes.ATTRIBUTE_FOR_SCHEMA,
+                        relationalDBTypeGuid,
+                        SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE,
+                        tableGUID,
+                        SupportedTypes.TABLE);
                 newRelationship.setCreateTime(createTime);
                 instanceEvents.add(buildNewRelationshipEvent(newRelationship));
+
+            } catch (UnsupportedEncodingException e) {
+                // TODO deal with error properly
+                throw new RuntimeException(e);
+            }
+
+            if (hmsTable.getSd() != null) {
+                Iterator<FieldSchema> colsIterator = hmsTable.getSd().getColsIterator();
+                while (colsIterator.hasNext()) {
+                    FieldSchema fieldSchema = colsIterator.next();
+                    EntityDetail newColumnEntity = mapFieldSchemaToEntity(fieldSchema, tableQualifiedName, createTime);
+
+                    OMRSInstanceEvent colInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.NEW_ENTITY_EVENT,
+                            newColumnEntity);
+                    colInstanceEvent.setEventOriginator(eventOriginator);
+                    colInstanceEvent.setHomeMetadataCollectionId(newTableEntity.getMetadataCollectionId());
+                    instanceEvents.add(colInstanceEvent);
+                    Relationship newRelationship = mapEndGUIDToRelationship(tableGUID, newColumnEntity.getGUID(), createTime);
+
+                    newRelationship.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
+                    newRelationship.setMetadataCollectionName(repositoryHelper.getMetadataCollectionName());
+                    newRelationship.setStatus(InstanceStatus.ACTIVE);
+                    newRelationship.setCreateTime(createTime);
+                    instanceEvents.add(buildNewRelationshipEvent(newRelationship));
+                }
             }
         }
         return instanceEvents;
@@ -139,7 +144,7 @@ public class OMRSInstanceEventBuilder {
         if (tableType != null && tableType.equals("VIRTUAL_VIEW")) {
             //Indicate that this hmsTable is a view using the classification
             //tableClassifications.add(mapperHelper.createCalculatedValueClassification("refreshRepository", tableEntity, connectorTable.getHmsViewOriginalText()));
-            tableEntity = repositoryHelper.createCalculatedValueClassification(methodName, tableEntity);
+            tableEntity = repositoryHelper.createCalculatedValueClassification(tableEntity);
 
         }
         return tableEntity;
