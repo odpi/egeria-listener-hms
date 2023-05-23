@@ -19,7 +19,7 @@ import java.util.*;
  * These methods are duplicates from org.odpi.openmetadata.repositoryservices.eventmanagement.OMRSRepositoryEventBuilder
  * in core Egeria - apart from they return the OMRSInstanceEvent rather than issuing the event.
  */
-
+@SuppressWarnings("JavaUtilDate")
 public class OMRSInstanceEventBuilder {
 
     private OMRSEventOriginator eventOriginator = null;
