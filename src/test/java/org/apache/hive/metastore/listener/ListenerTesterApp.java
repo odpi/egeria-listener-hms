@@ -23,9 +23,9 @@ public class ListenerTesterApp {
     public ListenerTesterApp() {
         Configuration config = new Configuration();
 
-        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"crn:v1:bluemix:public:sql-query:eu-de:a/f5e2ac71094077500e0d4b1ef8b9de0a:598f929e-2446-4f1d-9283-7b906465bd3e::");
-        config.set(HMSListener.CONFIG_SERVER_NAME, "danielIBM");
-        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "data-engine");
+        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
+        config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
+        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
         // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
         config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
@@ -134,7 +134,8 @@ public class ListenerTesterApp {
                     // TODO check if already a column name
                     Table newTable = oldTable.deepCopy();
                     newTable.getSd().addToCols(new FieldSchema(colName, "String", null));
-                    AlterTableEvent alterTableEvent = new AlterTableEvent(oldTable, newTable, false, false, null);
+
+                    AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);
                     tableNameTableMap.put(enteredTableName, newTable);
                     hmsListener.onAlterTable(alterTableEvent);
 
@@ -304,6 +305,42 @@ public class ListenerTesterApp {
             if (constructor == null) {
                 constructor = createTableEventclass.getDeclaredConstructor(Table.class, boolean.class, IHMSHandler.class);
                 tableEvent = (CreateTableEvent) constructor.newInstance(table, true, null);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return tableEvent;
+    }
+    /**
+     * Unfortunately HMS 3.1.3 and HMS 4.0.0 alpha 2 have different constructor parameters for AlterTableEvent, this method uses reflection
+     * to try each constructor shape.
+     * @param oldTable the table to put in the CreateTableEvent
+     * @param newTable
+     * @return alterTableEvent
+     */
+    private static AlterTableEvent getAlterTableEvent(Table oldTable, Table newTable) {
+        AlterTableEvent tableEvent = null;
+        try {
+            Class<?> alterTableEventclass = Class.forName("org.apache.hadoop.hive.metastore.events.AlterTableEvent");
+            Constructor constructor = null;
+            try {
+                constructor = alterTableEventclass.getDeclaredConstructor(Table.class, Table.class, boolean.class, boolean.class, IHMSHandler.class);
+                tableEvent = (AlterTableEvent) constructor.newInstance(oldTable, newTable, true, true, null);
+            } catch (NoSuchMethodException e) {
+                // we expect this if running against hms v3.1.3
+            }
+
+            if (constructor == null) {
+                constructor = alterTableEventclass.getDeclaredConstructor(Table.class, Table.class, boolean.class, boolean.class, IHMSHandler.class, boolean.class);
+                tableEvent = (AlterTableEvent) constructor.newInstance(oldTable, newTable, true, true, null, true);
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
