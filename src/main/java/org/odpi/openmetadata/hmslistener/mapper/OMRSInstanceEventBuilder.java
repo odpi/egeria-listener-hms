@@ -114,7 +114,7 @@ public class OMRSInstanceEventBuilder {
             // TODO deal with error properly
             throw new RuntimeException(e);
         }
-        Date createTime = new Date(hmsTable.getCreateTime()*1000);
+        Date createTime = new Date(hmsTable.getCreateTime()*1000L);
         tableEntity.setCreateTime(createTime);
         InstanceProperties instanceProperties = repositoryHelper.addStringPropertyToInstance("Egeria HMS listener",
                 null,
@@ -259,7 +259,7 @@ public class OMRSInstanceEventBuilder {
         }
         List<EntityDetail> entities = new ArrayList<>();
         List<Relationship> relationships = new ArrayList<>();
-        Date createTime = new Date(newTable.getCreateTime()*1000);
+        Date createTime = new Date(newTable.getCreateTime()*1000L);
         InstanceGraph instanceGraph = null;
         for (String columnName : batchEntityNamesSet) {
 
@@ -309,7 +309,7 @@ public class OMRSInstanceEventBuilder {
 
         entity.setType(SupportedTypes.RELATIONAL_TABLE_INSTANCETYPE);
         entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-        entity.setCreateTime(new Date(tableToDelete.getCreateTime()*1000));
+        entity.setCreateTime(new Date(tableToDelete.getCreateTime()*1000L));
         entity.setVersion(new Date().getTime());
         return entity;
     }
@@ -327,8 +327,17 @@ public class OMRSInstanceEventBuilder {
         entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
         // Assert  the create time of the table is the same as the create time of the column for Egeria
         // so the create time will match and the deletion will occur
-        entity.setCreateTime(new Date(table.getCreateTime()*1000));
+        entity.setCreateTime(getCreateTime(table));
         entity.setVersion(new Date().getTime());
         return entity;
+    }
+
+    /**
+     * get create time as a Date from hms table
+     * @param table hms table
+     * @return date
+     */
+    private static Date getCreateTime(Table table) {
+        return new Date(table.getCreateTime() * 1000L);
     }
 }
