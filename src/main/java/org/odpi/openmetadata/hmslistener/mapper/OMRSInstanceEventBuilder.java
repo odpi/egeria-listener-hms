@@ -285,14 +285,12 @@ public class OMRSInstanceEventBuilder {
             String oldColName = oldColumnIterator.next();
             if (!newTableColumnMap.containsKey(oldColName) ) {
                 // delete this column as it exists in the old but not in the new table
-                EntityDetail entity =  null;
+                EntityDetail entity =  getColumnEntityToDelete(newTable, oldColName, tableQualifiedName);
 
                 OMRSInstanceEvent deleteColInstanceEvent = buildDeletedEntityEvent(entity);
                 instanceEvents.add(deleteColInstanceEvent);
             }
         }
-
-
         return instanceEvents;
     }
 
@@ -315,8 +313,10 @@ public class OMRSInstanceEventBuilder {
     }
     public EntityDetail getColumnEntityToDelete(Table table, String columnName, String tableQualifiedName) {
         EntityDetail entity = new EntityDetail();
+
         try {
-            String guid = Base64.getUrlEncoder().encodeToString(tableQualifiedName.getBytes("UTF-8"));
+            String qualifiedColumnName = tableQualifiedName +  SupportedTypes.SEPARATOR_CHAR + columnName;
+            String guid = Base64.getUrlEncoder().encodeToString(qualifiedColumnName.getBytes("UTF-8") );
             entity.setGUID(guid);
         } catch (UnsupportedEncodingException e) {
             // TODO deal with error properly
@@ -325,7 +325,7 @@ public class OMRSInstanceEventBuilder {
 
         entity.setType(SupportedTypes.RELATIONAL_COLUMN_INSTANCETYPE);
         entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
-        // Assert  the create time of the table is the same as the create time of the column for Egeria
+        // Assert the create time of the table is the same as the create time of the column for Egeria
         // so the create time will match and the deletion will occur
         entity.setCreateTime(getCreateTime(table));
         entity.setVersion(new Date().getTime());
