@@ -122,7 +122,7 @@ public class ListenerTesterApp {
                     while(colNameInvalid) {
                         System.out.println("Enter the new column name");
                         colName = sc.nextLine();
-                        if (colName == null || colName.equals("")) {
+                        if (colName == null || colName.length() == 0) {
                             System.err.println("column name must be entered");
                         } else if (colName.contains(" ")) {
                             System.err.println("column name cannot contain blanks");
@@ -141,59 +141,12 @@ public class ListenerTesterApp {
 
 
                 } else if (op.equalsIgnoreCase("d")) {
-//                    if (tableNameTableMap.isEmpty()) {
-//                        System.err.println("Nothing to delete");
-//                    } else {u
-//                        System.err.println("Choose which table to delete - below are the tables we have created)");
-//                        for (String tableName : tableNameTableMap.keySet()) {
-//                            System.err.println(tableName);
-//                        }
-//                        enteredTableName = sc.nextLine();
-//
-//                        System.err.println("Press Y to delete table " + enteredTableName);
-//                        String tabledeleteconfirm = sc.nextLine();
-//                        if (tabledeleteconfirm.equalsIgnoreCase("y")) {
-//                            if (tableNameTableMap.keySet().contains(enteredTableName)) {
-//                                System.err.println("Dropping table " + enteredTableName);
-//                                dropTable(enteredTableName);
-//                                if (tableNameTableMap.keySet().contains(enteredTableName)) {
-//                                    tableNameTableMap.remove(enteredTableName);
-//                                }
-//                            } else {
-//                                // need to create the table object including the create time
-//                                // then drop
-//                            }
-//                        } else {
-//                            System.err.println("Aborting delete");
-//                        }
-//                    }
-
-//                    System.err.println("Choose which table to update - below are the tables we have created)");
-//                    for (String tableName : tableNameTableMap.keySet()) {
-//                        System.err.println(tableName);
-//                    }
-//                    enteredTableName = sc.nextLine();
-//
-//                    System.err.println("Press Y to update table " + enteredTableName);
-//                    System.out.println("");
-//                    System.out.println("Enter a column operation - a to add, d to delete u to update, q to quit:\n ");
-//
-//
-//
-//
-//
-//
-//
-
+                    // TODO
                 } else if (op.equalsIgnoreCase("q")) {
                     processing = false;
                 } else {
                     System.out.println("Invalid Operation :" + op);
                 }
-
-
-
-
 
             } else if (op.equalsIgnoreCase("q")) {
                 processing = false;
