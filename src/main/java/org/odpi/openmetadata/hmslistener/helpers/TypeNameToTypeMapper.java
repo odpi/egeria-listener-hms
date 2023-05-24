@@ -22,6 +22,8 @@ public class TypeNameToTypeMapper {
             type = SupportedTypes.NESTED_SCHEMA_ATTRIBUTE_TYPE;
         } else  if (name.equals(SupportedTypes.TYPE_EMBEDDED_ATTRIBUTE)) {
             type = SupportedTypes.TYPE_EMBEDDED_ATTRIBUTE_TYPE;
+        } else  if (name.equals(SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE)) {
+            type = SupportedTypes.RELATIONAL_DB_SCHEMA_TYPE_TYPE;
         }
 
         return type;

@@ -14,8 +14,8 @@ public class SupportedTypes {
     // this should be a natural to the technology separator character to be used to separate elements in a name.
     public static final String SEPARATOR_CHAR = ".";
 
-    public static final String DEFAULT_DEPLOYED_SCHEMA_TOKEN_NAME = "default-deployed-schema";
-    public static final String DEFAULT_RELATIONAL_DB_SCHEMA_TYPE = "default-relational-DB-Schema-Type";
+    public static final String DEFAULT_DEPLOYED_SCHEMA_TOKEN_NAME = "deployed-schema";
+    public static final String DEFAULT_RELATIONAL_DB_SCHEMA_TYPE = "relational-DB-Schema-Type";
 
 
     public static final String CONNECTION = "Connection";
@@ -74,6 +74,12 @@ public class SupportedTypes {
             TypeDefCategory.ENTITY_DEF,
             "ce7e72b8-396a-4013-8688-f9d973067425",
             TABLE,
+            1L
+    );
+    public static final InstanceType RELATIONAL_DB_SCHEMA_TYPE_TYPE = new InstanceType(
+            TypeDefCategory.ENTITY_DEF,
+            "f20f5f45-1afb-41c1-9a09-34d8812626a4",
+            RELATIONAL_DB_SCHEMA_TYPE,
             1L
     );
     // relationships and types
