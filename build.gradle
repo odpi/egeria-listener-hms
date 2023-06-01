@@ -54,7 +54,7 @@ ext {
     kafkaVersion = '3.4.0'
     collectionsVersion = '4.4'
     jupiterVersion = '5.8.1'
-    jacksonVersion = '2.14.2'
+    jacksonVersion = '2.15.2'
     slf4JVersion = '1.7.36'
 }
 
