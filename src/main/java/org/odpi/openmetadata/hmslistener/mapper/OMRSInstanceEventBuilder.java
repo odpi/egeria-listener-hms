@@ -279,9 +279,11 @@ public class OMRSInstanceEventBuilder {
             relationships.add(relationship);
             instanceGraph = new InstanceGraph(entities, relationships);
         }
-        OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
-        batchInstanceEvent.setEventOriginator(eventOriginator);
-        instanceEvents.add(batchInstanceEvent);
+        if (instanceGraph !=null) {
+            OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
+            batchInstanceEvent.setEventOriginator(eventOriginator);
+            instanceEvents.add(batchInstanceEvent);
+        }
 
         // now look for deleted columns
         // reset the iterator
@@ -314,6 +316,7 @@ public class OMRSInstanceEventBuilder {
         entity.setMetadataCollectionId(repositoryHelper.getMetadataCollectionId());
         entity.setCreateTime(new Date(tableToDelete.getCreateTime()*1000L));
         entity.setVersion(new Date().getTime());
+        entity.setStatus(InstanceStatus.DELETED);
         return entity;
     }
     public EntityDetail getColumnEntityToDelete(Table table, String columnName, String tableQualifiedName) {
@@ -334,6 +337,7 @@ public class OMRSInstanceEventBuilder {
         // so the create time will match and the deletion will occur
         entity.setCreateTime(getCreateTime(table));
         entity.setVersion(new Date().getTime());
+        entity.setStatus(InstanceStatus.DELETED);
         return entity;
     }
 
