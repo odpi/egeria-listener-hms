@@ -14,6 +14,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ListenerTesterApp {
     private HMSListener hmsListener;
@@ -22,10 +23,15 @@ public class ListenerTesterApp {
     private String dbName;
     public ListenerTesterApp() {
         Configuration config = new Configuration();
-
         config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
         config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
         config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
+
+        // delete >>
+        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"crn:v1:bluemix:public:sql-query:eu-de:a/f5e2ac71094077500e0d4b1ef8b9de0a:598f929e-2446-4f1d-9283-7b906465bd3e::");
+        config.set(HMSListener.CONFIG_SERVER_NAME, "danielIBM");
+        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "data-engine");
+        // << delete
         // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
         config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
@@ -58,9 +64,9 @@ public class ListenerTesterApp {
                     System.out.println("Enter the table name");
                     tableName = sc.nextLine();
                     if (tableName == null || tableName.equals("")) {
-                        System.err.println("table name must be entered");
+                        System.out.println("table name must be entered");
                     } else if (tableName.contains(" ")) {
-                        System.err.println("table name cannot contain blanks");
+                        System.out.println("table name cannot contain blanks");
                     } else {
                         tableNãmeInvalid = false;
                     }
@@ -71,39 +77,42 @@ public class ListenerTesterApp {
 
             } else if (op.equalsIgnoreCase("d")) {
                 if (tableNameTableMap.isEmpty()) {
-                    System.err.println("Nothing to delete");
+                    System.out.println("Nothing to delete");
                 } else {
-                    System.err.println("Choose which table to delete - below are the tables we have created)");
+                    System.out.println("Choose which table to delete - below are the tables we have created)");
                     for (String tableName : tableNameTableMap.keySet()) {
-                        System.err.println(tableName);
+                        System.out.println(tableName);
                     }
-                    String enteredTableName = sc.nextLine();
 
-                    System.err.println("Press Y to delete table " + enteredTableName);
-                    String tabledeleteconfirm = sc.nextLine();
-                    if (tabledeleteconfirm.equalsIgnoreCase("y")) {
-                        if (tableNameTableMap.keySet().contains(enteredTableName)) {
-                            System.err.println("Dropping table " + enteredTableName);
-                            dropTable(enteredTableName);
-                            if (tableNameTableMap.keySet().contains(enteredTableName)) {
-                                tableNameTableMap.remove(enteredTableName);
+
+                        String enteredTableName = null;
+                        boolean tableNameInvalid = true;
+                        while(tableNameInvalid) {
+                            System.out.println("Enter the table name to delete");
+                            enteredTableName = sc.nextLine();
+                            if (enteredTableName == null || enteredTableName.length() == 0) {
+                                System.out.println("Table name must be entered");
+                            } else if (enteredTableName.contains(" ")) {
+                                System.out.println("Table name cannot contain blanks");
+                            } else {
+                                tableNameInvalid = false;
                             }
-                        } else {
-                            // need to create the table object including the create time
-                            // then drop
                         }
+                    System.out.println("Press Y to delete table " + enteredTableName);
+                    String tableDeleteConfirm = sc.nextLine();
+                    if (tableDeleteConfirm.equalsIgnoreCase("y")) {
+                        dropTable(enteredTableName);
                     } else {
-                        System.err.println("Aborting delete");
+                        System.out.println("Aborting delete");
                     }
                 }
             } else if (op.equalsIgnoreCase("u")) {
-                System.err.println("Choose which table to update - below are the tables we have created)");
+                System.out.println("Choose which table to update - below are the tables we have created)");
                 for (String tableName : tableNameTableMap.keySet()) {
-                    System.err.println(tableName);
+                    System.out.println(tableName);
                 }
                 String enteredTableName = sc.nextLine();
 
-//                System.err.println("Press Y to update table " + enteredTableName);
                 System.out.println("");
                 System.out.println("Existing table has columns:");
                 Table oldTable = tableNameTableMap.get(enteredTableName);
@@ -123,9 +132,9 @@ public class ListenerTesterApp {
                         System.out.println("Enter the new column name");
                         colName = sc.nextLine();
                         if (colName == null || colName.length() == 0) {
-                            System.err.println("column name must be entered");
+                            System.out.println("Column name must be entered");
                         } else if (colName.contains(" ")) {
-                            System.err.println("column name cannot contain blanks");
+                            System.out.println("Column name cannot contain blanks");
                         } else {
                             colNameInvalid = false;
                         }
@@ -140,8 +149,80 @@ public class ListenerTesterApp {
                     hmsListener.onAlterTable(alterTableEvent);
 
 
-                } else if (op.equalsIgnoreCase("d")) {
-                    // TODO
+                } else if (colOp.equalsIgnoreCase("d")) {
+                    String colNameToDelete = null;
+                    boolean colNameInvalid = true;
+                    while(colNameInvalid) {
+                        System.out.println("Enter the column name to delete");
+                        colNameToDelete = sc.nextLine();
+                        if (colNameToDelete == null || colNameToDelete.length() == 0) {
+                            System.out.println("Column name to delete must be entered");
+                        } else if (colNameToDelete.contains(" ")) {
+                            System.out.println("Column name to delete cannot contain blanks");
+                        } else {
+                            colNameInvalid = false;
+                        }
+                    }
+                    Table newTable = oldTable.deepCopy();
+                    List<FieldSchema> newCols = newTable.getSd().getCols();
+                    final String colName = colNameToDelete;
+                    // the col name may not be in the new table - tht case nothing will be removed.
+                    newCols = newCols.stream()
+                            .filter(x -> !x.getName().equals(colName))
+                            .collect(Collectors.toList());
+
+                    newTable.getSd().setCols(newCols);
+                    if (oldTable.getSd().getCols().size() !=newCols.size()) {
+                        AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);
+                        tableNameTableMap.put(enteredTableName, newTable);
+                        hmsListener.onAlterTable(alterTableEvent);
+                    }
+                } else if (colOp.equalsIgnoreCase("u")) {
+                    String colNameToUpdate = null;
+                    boolean colNameInvalid = true;
+                    while(colNameInvalid) {
+                        System.out.println("Enter the column name to update");
+                        colNameToUpdate = sc.nextLine();
+                        if (colNameToUpdate == null || colNameToUpdate.length() == 0) {
+                            System.out.println("Column name to update must be entered");
+                        } else if (colNameToUpdate.contains(" ")) {
+                            System.out.println("Column name to update cannot contain blanks");
+                        } else {
+                            colNameInvalid = false;
+                        }
+                    }
+                    String newTypeName = null;
+                    boolean typeNameInvalid = true;
+                    while(typeNameInvalid) {
+                        System.out.println("Enter the type name to update");
+                        newTypeName = sc.nextLine();
+                        if (newTypeName == null || newTypeName.length() == 0) {
+                            System.out.println("Type name to update must be entered");
+                        } else if (newTypeName.contains(" ")) {
+                            System.out.println("Type name to update cannot contain blanks");
+                        } else {
+                            typeNameInvalid = false;
+                        }
+                    }
+                    
+                    Table newTable = oldTable.deepCopy();
+                    List<FieldSchema> oldCols = newTable.getSd().getCols();
+                    List<FieldSchema> newCols = new ArrayList<>();
+                    Iterator<FieldSchema> iterator = oldCols.listIterator();
+                    while (iterator.hasNext()) {
+                        FieldSchema fieldSchema = iterator.next();
+                        String name = fieldSchema.getName();
+                        if (name.equals(newTypeName)) {
+                            fieldSchema.setType(newTypeName);
+                        }
+                        newCols.add(fieldSchema);
+                    }
+                    newTable.getSd().setCols(newCols);
+                    AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);
+                    tableNameTableMap.put(enteredTableName, newTable);
+                    hmsListener.onAlterTable(alterTableEvent);
+
+
                 } else if (op.equalsIgnoreCase("q")) {
                     processing = false;
                 } else {
@@ -163,9 +244,9 @@ public class ListenerTesterApp {
             System.out.println("Enter the " + artifiactName +" name :\n ");
             artifiactValue = sc.nextLine();
             if (artifiactValue == null || artifiactValue.equals("")) {
-                System.err.println(artifiactName + " name must be entered");
+                System.out.println(artifiactName + " name must be entered");
             } else if (artifiactValue.contains(" ")) {
-                System.err.println(artifiactName + " name cannot contain blanks");
+                System.out.println(artifiactName + " name cannot contain blanks");
             } else {
                 nameInvalid = false;
             }
@@ -192,8 +273,8 @@ public class ListenerTesterApp {
         sd.setCols(cols);
         table.setSd(sd);
         CreateTableEvent tableEvent = getCreateTableEvent(table);
-        System.err.println("Adding a Table using event:");
-        System.err.println(tableEvent);
+        System.out.println("Adding a Table using event:");
+        System.out.println(tableEvent);
         hmsListener.onCreateTable(tableEvent);
         return table;
 
@@ -201,9 +282,10 @@ public class ListenerTesterApp {
     private void dropTable(String tableName) throws MetaException {
         Table table = tableNameTableMap.get(tableName);
         DropTableEvent tableEvent = getDropTableEvent(table);
-        System.err.println("Dropping a Table using event:");
-        System.err.println(tableEvent);
+        System.out.println("Dropping a Table using event:");
+        System.out.println(tableEvent);
         hmsListener.onDropTable(tableEvent);
+        tableNameTableMap.remove(tableName);
     }
 
     private static DropTableEvent getDropTableEvent(Table table) {
