@@ -26,12 +26,7 @@ public class ListenerTesterApp {
         config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
         config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
         config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
-
-        // delete >>
-        config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"crn:v1:bluemix:public:sql-query:eu-de:a/f5e2ac71094077500e0d4b1ef8b9de0a:598f929e-2446-4f1d-9283-7b906465bd3e::");
-        config.set(HMSListener.CONFIG_SERVER_NAME, "danielIBM");
-        config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "data-engine");
-        // << delete
+        
         // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
         config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
