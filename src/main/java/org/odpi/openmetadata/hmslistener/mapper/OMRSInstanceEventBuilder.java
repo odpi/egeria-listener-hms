@@ -285,11 +285,9 @@ public class OMRSInstanceEventBuilder {
         }
         if (!entities.isEmpty() || !relationships.isEmpty()) {
             instanceGraph = new InstanceGraph(entities, relationships);
-            if (instanceGraph != null) {
-                OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
-                batchInstanceEvent.setEventOriginator(eventOriginator);
-                instanceEvents.add(batchInstanceEvent);
-            }
+            OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
+            batchInstanceEvent.setEventOriginator(eventOriginator);
+            instanceEvents.add(batchInstanceEvent);
         }
 
         // now look for deleted columns

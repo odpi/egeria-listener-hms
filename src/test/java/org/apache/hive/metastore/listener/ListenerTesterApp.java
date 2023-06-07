@@ -27,7 +27,7 @@ public class ListenerTesterApp {
         config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
         config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
         config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
-        
+
         // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
         config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
@@ -208,8 +208,6 @@ public class ListenerTesterApp {
                     Iterator<FieldSchema> oldColsIterator = oldCols.listIterator();
                     while (oldColsIterator.hasNext()) {
                         FieldSchema oldFieldSchema = oldColsIterator.next();
-                        String name = oldFieldSchema.getName();
-
                         if (!oldFieldSchema.getType().equals(newTypeName)) {
                             FieldSchema newFieldSchema = oldFieldSchema;
                             newFieldSchema.setType(newTypeName);
