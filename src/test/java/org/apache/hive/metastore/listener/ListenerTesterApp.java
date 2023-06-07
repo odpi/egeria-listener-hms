@@ -14,6 +14,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ListenerTesterApp {
@@ -203,14 +204,17 @@ public class ListenerTesterApp {
                     Table newTable = oldTable.deepCopy();
                     List<FieldSchema> oldCols = newTable.getSd().getCols();
                     List<FieldSchema> newCols = new ArrayList<>();
-                    Iterator<FieldSchema> iterator = oldCols.listIterator();
-                    while (iterator.hasNext()) {
-                        FieldSchema fieldSchema = iterator.next();
-                        String name = fieldSchema.getName();
-                        if (name.equals(newTypeName)) {
-                            fieldSchema.setType(newTypeName);
+
+                    Iterator<FieldSchema> oldColsIterator = oldCols.listIterator();
+                    while (oldColsIterator.hasNext()) {
+                        FieldSchema oldFieldSchema = oldColsIterator.next();
+                        String name = oldFieldSchema.getName();
+
+                        if (!oldFieldSchema.getType().equals(newTypeName)) {
+                            FieldSchema newFieldSchema = oldFieldSchema;
+                            newFieldSchema.setType(newTypeName);
+                            newCols.add(newFieldSchema);
                         }
-                        newCols.add(fieldSchema);
                     }
                     newTable.getSd().setCols(newCols);
                     AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);

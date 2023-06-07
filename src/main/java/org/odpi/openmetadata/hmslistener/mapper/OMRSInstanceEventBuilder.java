@@ -238,7 +238,8 @@ public class OMRSInstanceEventBuilder {
 
         Map<String, FieldSchema> oldTableColumnMap = new HashMap<>();
         Map<String, FieldSchema> newTableColumnMap = new HashMap<>();
-        Set<String> batchEntityNamesSet = new HashSet<>();
+        Set<String> addEntityNamesSet = new HashSet<>();
+        Set<String> updateEntityNamesSet = new HashSet<>();
         // check the columns
         Iterator<FieldSchema> oldTableColumnIterator = oldTable.getSd().getColsIterator();
         while (oldTableColumnIterator.hasNext()) {
@@ -253,12 +254,12 @@ public class OMRSInstanceEventBuilder {
             newTableColumnMap.put(colName, newFieldSchema);
             FieldSchema oldFieldSchema = oldTableColumnMap.get(colName);
             if (oldFieldSchema == null) {
-                batchEntityNamesSet.add(colName);
+                addEntityNamesSet.add(colName);
             } else {
                 // update if there is a change in type
                 // TODO do comments if required
                 if (!oldFieldSchema.getType().equals(newFieldSchema.getType())) {
-                    batchEntityNamesSet.add(colName);
+                    updateEntityNamesSet.add(colName);
                 }
             }
         }
@@ -266,7 +267,7 @@ public class OMRSInstanceEventBuilder {
         List<Relationship> relationships = new ArrayList<>();
         Date createTime = new Date(newTable.getCreateTime()*1000L);
         InstanceGraph instanceGraph = null;
-        for (String columnName : batchEntityNamesSet) {
+        for (String columnName : addEntityNamesSet) {
 
             EntityDetail columnEntity = mapFieldSchemaToEntity(newTableColumnMap.get(columnName), tableQualifiedName, createTime);
             Relationship relationship = mapEndGUIDToRelationship(tableEntity.getGUID(), columnEntity.getGUID(), createTime);
@@ -277,12 +278,18 @@ public class OMRSInstanceEventBuilder {
             relationship.setCreateTime(createTime);
             entities.add(columnEntity);
             relationships.add(relationship);
-            instanceGraph = new InstanceGraph(entities, relationships);
         }
-        if (instanceGraph !=null) {
-            OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
-            batchInstanceEvent.setEventOriginator(eventOriginator);
-            instanceEvents.add(batchInstanceEvent);
+        for (String columnName : updateEntityNamesSet) {
+            EntityDetail columnEntity = mapFieldSchemaToEntity(newTableColumnMap.get(columnName), tableQualifiedName, createTime);
+            entities.add(columnEntity);
+        }
+        if (!entities.isEmpty() || !relationships.isEmpty()) {
+            instanceGraph = new InstanceGraph(entities, relationships);
+            if (instanceGraph != null) {
+                OMRSInstanceEvent batchInstanceEvent = new OMRSInstanceEvent(OMRSInstanceEventType.BATCH_INSTANCES_EVENT, instanceGraph);
+                batchInstanceEvent.setEventOriginator(eventOriginator);
+                instanceEvents.add(batchInstanceEvent);
+            }
         }
 
         // now look for deleted columns
