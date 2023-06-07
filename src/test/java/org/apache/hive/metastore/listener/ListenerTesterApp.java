@@ -10,7 +10,6 @@ import org.apache.hadoop.hive.metastore.events.AlterTableEvent;
 import org.apache.hadoop.hive.metastore.events.CreateTableEvent;
 import org.apache.hadoop.hive.metastore.events.DropTableEvent;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -26,7 +25,7 @@ public class ListenerTesterApp {
         config.set(HMSListener.CONFIG_METADATA_COLLECTION_ID,"TODO");
         config.set(HMSListener.CONFIG_SERVER_NAME, "TODO");
         config.set(HMSListener.CONFIG_QUALIFIEDNAME_PREFIX, "TODO");
-        
+
         // config.set(HMSListener.CONFIG_ORGANISATION_NAME  ,"Coco");
         config.set(HMSListener.CONFIG_KAFKA_TOPIC_NAME,"egeriaTopics.openmetadata.repositoryservices.cohort.myCohort2.OMRSTopic.instances");
         config.set(HMSListener.CONFIG_KAFKA_BOOTSTRAP_SERVER_URL,"localhost:9092");
@@ -203,14 +202,15 @@ public class ListenerTesterApp {
                     Table newTable = oldTable.deepCopy();
                     List<FieldSchema> oldCols = newTable.getSd().getCols();
                     List<FieldSchema> newCols = new ArrayList<>();
-                    Iterator<FieldSchema> iterator = oldCols.listIterator();
-                    while (iterator.hasNext()) {
-                        FieldSchema fieldSchema = iterator.next();
-                        String name = fieldSchema.getName();
-                        if (name.equals(newTypeName)) {
-                            fieldSchema.setType(newTypeName);
+
+                    Iterator<FieldSchema> oldColsIterator = oldCols.listIterator();
+                    while (oldColsIterator.hasNext()) {
+                        FieldSchema oldFieldSchema = oldColsIterator.next();
+                        if (!oldFieldSchema.getType().equals(newTypeName)) {
+                            FieldSchema newFieldSchema = oldFieldSchema;
+                            newFieldSchema.setType(newTypeName);
+                            newCols.add(newFieldSchema);
                         }
-                        newCols.add(fieldSchema);
                     }
                     newTable.getSd().setCols(newCols);
                     AlterTableEvent alterTableEvent = getAlterTableEvent(oldTable, newTable);
