@@ -51,7 +51,7 @@ ext {
     hmsVersion4 = '4.0.0-alpha-2'
     hadoopVersion = '3.3.4'
     hiveStorageVersion = '2.8.1'
-    kafkaVersion = '3.4.0'
+    kafkaVersion = '3.5.0'
     collectionsVersion = '4.4'
     jupiterVersion = '5.8.1'
     jacksonVersion = '2.14.2'
