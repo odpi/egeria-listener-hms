@@ -53,7 +53,7 @@ ext {
     hiveStorageVersion = '2.8.1'
     kafkaVersion = '3.4.0'
     collectionsVersion = '4.4'
-    jupiterVersion = '5.8.1'
+    jupiterVersion = '5.10.0'
     jacksonVersion = '2.14.2'
     slf4JVersion = '1.7.36'
 }
