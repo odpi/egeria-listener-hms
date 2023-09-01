@@ -15,7 +15,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     // Checks for unnecessary & problematic dependencies
-    id 'com.autonomousapps.dependency-analysis' version "1.20.0"
+    id 'com.autonomousapps.dependency-analysis' version "1.21.0"
     // helps resolve log implementation clashes
     id 'dev.jacomet.logging-capabilities' version "0.11.0"
     // This plugin helps resolve jakarta/javax clashes
@@ -49,7 +49,7 @@ description = 'Egeria Connector for Hive Metastore'
 ext {
     hmsVersion3 = '3.1.3'
     hmsVersion4 = '4.0.0-alpha-2'
-    hadoopVersion = '3.3.4'
+    hadoopVersion = '3.3.6'
     hiveStorageVersion = '2.8.1'
     kafkaVersion = '3.4.0'
     collectionsVersion = '4.4'
