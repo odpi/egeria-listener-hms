@@ -55,7 +55,7 @@ ext {
     collectionsVersion = '4.4'
     jupiterVersion = '5.8.1'
     jacksonVersion = '2.14.2'
-    slf4JVersion = '1.7.36'
+    slf4JVersion = '2.0.11'
 }
 
 // Dependencies
